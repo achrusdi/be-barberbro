@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class LoginResponse {
     private String userId;
-    private String username;
+    private String email;
     private String token;
     private List<String> roles;
 }

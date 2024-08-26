@@ -1,6 +1,7 @@
 package com.enigmacamp.barbershop.controller;
 
-import com.enigmacamp.barbershop.model.dto.request.AuthRequest;
+import com.enigmacamp.barbershop.model.dto.request.LoginRequest;
+import com.enigmacamp.barbershop.model.dto.request.RegisterRequest;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.dto.response.LoginResponse;
 import com.enigmacamp.barbershop.model.dto.response.RegisterResponse;
@@ -18,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api")
 public class AuthController {
     private final AuthService authService;
     private static final Logger logger = LogManager.getLogger(AuthService.class);
 
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerUser(@RequestBody AuthRequest request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerUser(@RequestBody RegisterRequest request) {
         logger.info("Accessed Endpoint : " + "/register");
 
         RegisterResponse response = authService.regiserUser(request);
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
         logger.info("Accessed Endpoint : " + "/login");
 
         LoginResponse response = authService.login(request);

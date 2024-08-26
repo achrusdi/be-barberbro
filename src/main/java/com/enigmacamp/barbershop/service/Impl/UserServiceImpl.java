@@ -23,13 +23,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users getByContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByUsername(authentication.getPrincipal().toString())
+        return userRepository.findByEmail(authentication.getPrincipal().toString())
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Users loadUserByUsername(String username)  {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
+    public Users loadUserByUsername(String email)  {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("username not found"));
     }
 }

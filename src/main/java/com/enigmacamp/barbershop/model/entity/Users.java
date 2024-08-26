@@ -10,26 +10,30 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "m_user")
+@Entity(name = "m_users")
 public class Users implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_enable")
-    private Boolean isEnable;
+    @Column(name = "created_at", nullable = false,updatable = false)
+    private Long createdAt;
+
+    @Column(name = "update_at", nullable = false)
+    private Long updateAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -44,7 +48,7 @@ public class Users implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override

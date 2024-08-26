@@ -1,7 +1,8 @@
 package com.enigmacamp.barbershop.service.Impl;
 
 import com.enigmacamp.barbershop.constant.UserRole;
-import com.enigmacamp.barbershop.model.dto.request.AuthRequest;
+import com.enigmacamp.barbershop.model.dto.request.LoginRequest;
+import com.enigmacamp.barbershop.model.dto.request.RegisterRequest;
 import com.enigmacamp.barbershop.model.dto.response.LoginResponse;
 import com.enigmacamp.barbershop.model.dto.response.RegisterResponse;
 import com.enigmacamp.barbershop.model.entity.Role;
@@ -34,14 +35,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RegisterResponse regiserUser(AuthRequest request) throws DataIntegrityViolationException {
-        Role role = roleService.getOrCreate(UserRole.CUSTOMER);
+    public RegisterResponse regiserUser(RegisterRequest request) throws DataIntegrityViolationException {
+        Role role = roleService.getOrCreate(UserRole.valueOf(request.getRole()));
 
         Users user = Users.builder()
-                .username(request.getUsername())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(List.of(role))
-                .isEnable(true)
+                .createdAt(System.currentTimeMillis())
+                .updateAt(System.currentTimeMillis())
                 .build();
 
          userRepository.saveAndFlush(user);
@@ -49,16 +51,16 @@ public class AuthServiceImpl implements AuthService {
          List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
         return RegisterResponse.builder()
-                .username(user.getUsername())
+                .email(user.getUsername())
                 .roles(roles)
                 .build();
     }
     @Transactional(readOnly = true)
     @Override
-    public LoginResponse login(AuthRequest request) {
+    public LoginResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -66,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtService.generateToken(user);
         return LoginResponse.builder()
                 .userId(user.getId())
-                .username(user.getUsername())
+                .email(user.getUsername())
                 .roles(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .token(token)
                 .build();
