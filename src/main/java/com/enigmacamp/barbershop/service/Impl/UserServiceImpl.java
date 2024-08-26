@@ -1,6 +1,6 @@
 package com.enigmacamp.barbershop.service.Impl;
 
-import com.enigmacamp.barbershop.model.entity.User;
+import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.repository.UserRepository;
 import com.enigmacamp.barbershop.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User loadUserById(String id){
+    public Users loadUserById(String id){
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("userId not found"));
     }
     @Override
-    public User getByContext(){
+    public Users getByContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findByUsername(authentication.getPrincipal().toString())
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User loadUserByUsername(String username)  {
+    public Users loadUserByUsername(String username)  {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
     }
 }

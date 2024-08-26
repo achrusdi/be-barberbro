@@ -5,7 +5,7 @@ import com.enigmacamp.barbershop.model.dto.request.AuthRequest;
 import com.enigmacamp.barbershop.model.dto.response.LoginResponse;
 import com.enigmacamp.barbershop.model.dto.response.RegisterResponse;
 import com.enigmacamp.barbershop.model.entity.Role;
-import com.enigmacamp.barbershop.model.entity.User;
+import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.repository.UserRepository;
 import com.enigmacamp.barbershop.security.JwtService;
 import com.enigmacamp.barbershop.service.AuthService;
@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse regiserUser(AuthRequest request) throws DataIntegrityViolationException {
         Role role = roleService.getOrCreate(UserRole.CUSTOMER);
 
-        User user = User.builder()
+        Users user = Users.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(List.of(role))
@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
                         request.getPassword()
                 ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = (User) authentication.getPrincipal();
+        Users user = (Users) authentication.getPrincipal();
         String token = jwtService.generateToken(user);
         return LoginResponse.builder()
                 .userId(user.getId())

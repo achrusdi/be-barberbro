@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.barbershop.model.dto.response.JwtUserInfo;
-import com.enigmacamp.barbershop.model.entity.User;
+import com.enigmacamp.barbershop.model.entity.Users;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,7 +24,7 @@ public class JwtService {
 
     Algorithm algorithm = Algorithm.HMAC256("rains");
 
-    public String generateToken(User user) {
+    public String generateToken(Users user) {
         try {
             return JWT
                     .create()

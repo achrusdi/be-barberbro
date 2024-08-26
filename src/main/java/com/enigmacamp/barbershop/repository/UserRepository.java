@@ -1,12 +1,12 @@
 package com.enigmacamp.barbershop.repository;
 
-import com.enigmacamp.barbershop.model.entity.User;
+import com.enigmacamp.barbershop.model.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<Users, String> {
 
-    Optional<User> findByUsername(String username);
+    Optional<Users> findByUsername(String username);
 
 }
