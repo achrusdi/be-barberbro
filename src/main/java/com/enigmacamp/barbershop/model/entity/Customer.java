@@ -11,27 +11,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_portfolio")
-public class Portfolio {
+@Table(name = "m_customers")
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "barber_id", nullable = false)
-    private Barbers barberId;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users userId;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "path_url")
-    private String imageUrl;
+    @Column(name = "gender", nullable = false)
+    private String gender;
 
-    @Column(name = "created_at", nullable = false,updatable = false)
-    private Long createdAt;
+    @Column(name = "phone", nullable = false)
+    private String phone;
 
-    @Column(name = "updated_at", nullable = false)
-    private Long updatedAt;
-
+    @Column(name = "address", nullable = false)
+    private String address;
 }

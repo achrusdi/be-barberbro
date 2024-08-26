@@ -1,18 +1,16 @@
 package com.enigmacamp.barbershop.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "m_portfolio")
-public class Portfolio {
+@Table(name = "m_barber_avatar")
+public class BarberAvatar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,5 +31,4 @@ public class Portfolio {
 
     @Column(name = "updated_at", nullable = false)
     private Long updatedAt;
-
 }
