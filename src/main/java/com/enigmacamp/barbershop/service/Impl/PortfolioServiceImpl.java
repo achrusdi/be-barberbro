@@ -30,19 +30,22 @@ public class PortfolioServiceImpl implements PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final AuthTokenExtractor authTokenExtractor;
 
+
     @Autowired
-    public PortfolioServiceImpl(@Value("/assets/images/portfolio") String directoryPath,
-                                PortfolioRepository portfolioRepository,AuthTokenExtractor authTokenExtractor) {
+    public PortfolioServiceImpl(@Value("${app.barberShop.portfolio.multipart.path-location}") String directoryPath,
+                                PortfolioRepository portfolioRepository,
+                                AuthTokenExtractor authTokenExtractor) {
         this.directoryPath = Paths.get(directoryPath);
         this.portfolioRepository = portfolioRepository;
         this.authTokenExtractor = authTokenExtractor;
+
     }
 
     @PostConstruct
     public void initDirectory() {
         if (!Files.exists(directoryPath)) {
             try {
-                Files.createDirectory(directoryPath);
+                Files.createDirectories(directoryPath);
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }

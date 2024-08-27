@@ -3,7 +3,9 @@ package com.enigmacamp.barbershop.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AuthTokenExtractor {
 
 

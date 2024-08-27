@@ -1,5 +1,6 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+
 import com.enigmacamp.barbershop.constant.ResponseMessage;
 import com.enigmacamp.barbershop.model.entity.BarbersAvatar;
 import com.enigmacamp.barbershop.repository.BarbersAvatarRepoository;
@@ -27,7 +28,7 @@ public class BarbersAvatarServiceImpl implements BarbersAvatarService {
     private final BarbersAvatarRepoository barbersAvatarRepoository;
 
     @Autowired
-    public BarbersAvatarServiceImpl(@Value("/assets/images/barbers-avatar") String directoryPath,
+    public BarbersAvatarServiceImpl(@Value("${app.barberShop.barbers.multipart.path-location}") String directoryPath,
                                     BarbersAvatarRepoository barbersAvatarRepoository) {
         this.directoryPath = Paths.get(directoryPath);
         this.barbersAvatarRepoository = barbersAvatarRepoository;
@@ -37,7 +38,7 @@ public class BarbersAvatarServiceImpl implements BarbersAvatarService {
     public void initDirectory() {
         if (!Files.exists(directoryPath)) {
             try {
-                Files.createDirectory(directoryPath);
+                Files.createDirectories(directoryPath);
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             }
