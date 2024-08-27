@@ -13,14 +13,15 @@ import com.enigmacamp.barbershop.service.AuthService;
 import com.enigmacamp.barbershop.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -49,15 +50,15 @@ public class AuthServiceImpl implements AuthService {
 
                         userRepository.saveAndFlush(user);
 
-                        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                                        .toList();
+                        // List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                        //                 .toList();
 
                         return RegisterResponse.builder()
                                         .email(user.getUsername())
-                                        .roles(roles)
+                                        .role(user.getRole().get(0).getRole().name())
                                         .build();
                 } catch (Exception e) {
-                        throw new DataIntegrityViolationException("Email already exist");
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exist");
                 }
         }
 
@@ -75,12 +76,11 @@ public class AuthServiceImpl implements AuthService {
                         return LoginResponse.builder()
                                         .userId(user.getId())
                                         .email(user.getUsername())
-                                        .roles(user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                                                        .toList())
+                                        .role(user.getRole().get(0).getRole().name())
                                         .token(token)
                                         .build();
                 } catch (Exception e) {
-                        throw new RuntimeException("Email or password not correct");
+                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email or password not correct");
                 }
         }
 }

@@ -19,23 +19,21 @@ public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
     private final AccessDeniedHandlerImpl accessDeniedHandler;
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain( HttpSecurity httpSecurity) throws Exception {
-       return httpSecurity.
-               httpBasic(AbstractHttpConfigurer::disable)
-               .csrf(AbstractHttpConfigurer::disable)
-               .exceptionHandling(config -> {
-                   config.accessDeniedHandler(accessDeniedHandler);
-                   config.authenticationEntryPoint(authenticationEntryPoint);
-               })
-               .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                       .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                       .requestMatchers("/api/**").permitAll()
-                       .anyRequest().authenticated())
-               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-               .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(config -> {
+                    config.accessDeniedHandler(accessDeniedHandler);
+                    config.authenticationEntryPoint(authenticationEntryPoint);
+                })
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
 }
