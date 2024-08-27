@@ -25,8 +25,14 @@ public class Portfolio {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "path_url")
-    private String imageUrl;
+    @Column(name = "path")
+    private String path;
+
+    @Column(name = "size", nullable = false)
+    private Long size;
+
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
 
     @Column(name = "created_at", nullable = false,updatable = false)
     private Long createdAt;
