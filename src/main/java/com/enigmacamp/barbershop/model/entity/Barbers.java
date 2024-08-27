@@ -1,6 +1,8 @@
 package com.enigmacamp.barbershop.model.entity;
 
 import com.enigmacamp.barbershop.constant.BarberStatus;
+import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,5 +58,11 @@ public class Barbers {
 
     @Column(name = "updated_at", nullable = false)
     private Long updateAt;
+
+    public BarberResponse toResponse() {
+        return BarberResponse.builder()
+                .barberId(id)
+                .build();
+    }
 
 }

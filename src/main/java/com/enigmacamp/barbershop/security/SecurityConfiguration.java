@@ -19,7 +19,6 @@ public class SecurityConfiguration {
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
     private final AccessDeniedHandlerImpl accessDeniedHandler;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain( HttpSecurity httpSecurity) throws Exception {
        return httpSecurity.
