@@ -63,7 +63,7 @@ public class Barbers {
     @Column(name = "verified", nullable = false)
     private Boolean verified;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "barbershop_profile_picture_id")
     private BarberProfilePicture barbershop_profile_picture_id;
 
