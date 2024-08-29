@@ -1,12 +1,20 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
+import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.repository.BarbersRepository;
+import com.enigmacamp.barbershop.security.JwtService;
 import com.enigmacamp.barbershop.service.BarberService;
+import com.enigmacamp.barbershop.util.AuthTokenExtractor;
+import com.enigmacamp.barbershop.util.JwtHelpers;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -14,20 +22,39 @@ import lombok.RequiredArgsConstructor;
 public class BarberServiceImpl implements BarberService {
 
     private final BarbersRepository barbersRepository;
+    private final AuthTokenExtractor authTokenExtractor;
+    private final JwtService jwtService;
+    private final JwtHelpers jwtHelpers;
 
     @Override
-    public BarberResponse create(BarberRequest request) {
+    public BarberResponse create(HttpServletRequest srvrequest, BarberRequest request) {
         try {
+
+            Users user = jwtHelpers.getUser(srvrequest);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+            }
+
             Barbers barbers = Barbers.builder()
                     .name(request.getName())
-                    .latitudeLocation(request.getLatitude())
-                    .longitudeLocation(request.getLongitude())
-                    .address(request.getAddress())
+                    .contact_number(request.getContact_number())
+                    .email(request.getEmail())
+                    .street_address(request.getStreet_address())
+                    .state_province_region(request.getState_province_region())
+                    .postal_zip_code(request.getPostal_zip_code())
+                    .country(request.getCountry())
+                    .latitude(request.getLatitude())
+                    .longitude(request.getLongitude())
                     .description(request.getDescription())
-                    // .portfolioImages(request.getPortfolioImages())
+                    .userId(user)
+                    .balance(0)
+                    .verified(false)
+                    .createdAt(System.currentTimeMillis())
+                    .updateAt(System.currentTimeMillis())
+                    .barbershop_profile_picture_id(request.getBarbershop_profile_picture_id())
                     .build();
 
-            barbersRepository.save(barbers);
+            barbers = barbersRepository.save(barbers);
 
             return barbers.toResponse();
         } catch (Exception e) {

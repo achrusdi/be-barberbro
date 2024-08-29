@@ -1,9 +1,9 @@
 package com.enigmacamp.barbershop.service.Impl;
 
 import com.enigmacamp.barbershop.constant.ResponseMessage;
-import com.enigmacamp.barbershop.model.entity.BarbersAvatar;
+import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
 import com.enigmacamp.barbershop.model.entity.Portfolio;
-import com.enigmacamp.barbershop.repository.BarbersAvatarRepoository;
+import com.enigmacamp.barbershop.repository.BarbersProfilePictureRepository;
 import com.enigmacamp.barbershop.repository.PortfolioRepository;
 import com.enigmacamp.barbershop.service.PortfolioService;
 import com.enigmacamp.barbershop.util.AuthTokenExtractor;
@@ -67,7 +67,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
 //            query for get barberid by userid
 
-            Portfolio avatar = Portfolio.builder()
+            Portfolio barberProfilePicture = Portfolio.builder()
                     .name(uniqueFilename)
 //                    .barberId()
                     .contentType(multipartFile.getContentType())
@@ -77,10 +77,10 @@ public class PortfolioServiceImpl implements PortfolioService {
                     .updatedAt(System.currentTimeMillis())
                     .build();
 
-            portfolioRepository.saveAndFlush(avatar);
+            portfolioRepository.saveAndFlush(barberProfilePicture);
 
 
-            return avatar;
+            return barberProfilePicture;
 
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

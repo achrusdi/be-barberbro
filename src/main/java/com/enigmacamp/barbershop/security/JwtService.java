@@ -7,12 +7,15 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.barbershop.model.dto.response.JwtUserInfo;
 import com.enigmacamp.barbershop.model.entity.Users;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +23,10 @@ import java.util.Map;
 @Service
 @Slf4j
 public class JwtService {
-//    private final Stirng JWT_SECRET
+    // private final Stirng JWT_SECRET
 
-    Algorithm algorithm = Algorithm.HMAC256("rains");
+    // Algorithm algorithm = Algorithm.HMAC256("rains");
+    private Algorithm algorithm = Algorithm.HMAC256("ndog".getBytes(StandardCharsets.UTF_8));
 
     public String generateToken(Users user) {
         try {
@@ -30,11 +34,11 @@ public class JwtService {
                     .create()
                     .withIssuer("jwt-secret")
                     .withSubject(user.getId())
-//                    .withClaim("username", user.getUsername())
+                    // .withClaim("username", user.getUsername())
                     .withClaim("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .withIssuedAt(Instant.now())
                     .withExpiresAt(Instant.now().plusSeconds(3600))
-                    .withNotBefore(Instant.now().plusSeconds(3600))
+                    // .withNotBefore(Instant.now().plusSeconds(3600))
                     .sign(algorithm);
         } catch (JWTCreationException e) {
             log.error("Error while creating JWT : {}", e.getMessage());
@@ -43,9 +47,10 @@ public class JwtService {
     }
 
     public boolean verifyJwtToken(String token) {
+        System.out.println("Token in verify: " + parseJwt(token));
         try {
-            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-            jwtVerifier.verify(parseJwt(token));
+            DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(parseJwt(token));
+            System.out.println("Decoded JWT: " + decodedJWT);
             return true;
         } catch (JWTCreationException e) {
             log.error("Invalid JWT Signature/Claims : {}", e.getMessage());
@@ -53,8 +58,8 @@ public class JwtService {
         }
     }
 
-//    mengambil data account melalui token
-    //    cara 1 tanpa buat entity
+    // mengambil data account melalui token
+    // cara 1 tanpa buat entity
     public Map<String, String> getUserInfoByToken(String bearerToken) {
         try {
             DecodedJWT decodedJWT = jwtVerifier().verify(parseJwt(bearerToken));
@@ -64,14 +69,14 @@ public class JwtService {
             claims.put("role", decodedJWT.getClaim("role").asString());
 
             return claims;
-        } catch (JWTCreationException e){
+        } catch (JWTCreationException e) {
             log.error("Invalid JWT Signature/Claims : {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token");
         }
     }
 
-//    cara 2 menggunakan entity
-    public JwtUserInfo getUserInfoByToken2(String token){
+    // cara 2 menggunakan entity
+    public JwtUserInfo getUserInfoByToken2(String token) {
         DecodedJWT decodedJWT = jwtVerifier().verify(parseJwt(token));
 
         return JwtUserInfo.builder()
@@ -80,7 +85,6 @@ public class JwtService {
                 .build();
     }
 
-
     private String parseJwt(String token) {
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
@@ -88,9 +92,8 @@ public class JwtService {
         return null;
     }
 
-    private JWTVerifier jwtVerifier (){
+    private JWTVerifier jwtVerifier() {
         return JWT.require(algorithm)
                 .build();
     }
 }
-

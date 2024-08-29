@@ -2,8 +2,10 @@ package com.enigmacamp.barbershop.security;
 
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,23 +22,25 @@ public class SecurityConfiguration {
     private final AccessDeniedHandlerImpl accessDeniedHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain( HttpSecurity httpSecurity) throws Exception {
-       return httpSecurity.
-               httpBasic(AbstractHttpConfigurer::disable)
-               .csrf(AbstractHttpConfigurer::disable)
-               .exceptionHandling(config -> {
-                   config.accessDeniedHandler(accessDeniedHandler);
-                   config.authenticationEntryPoint(authenticationEntryPoint);
-               })
-               .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                       .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                       .requestMatchers("/api/**").permitAll()
-                       .requestMatchers("/assets/**").permitAll()
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(config -> {
+                    config.accessDeniedHandler(accessDeniedHandler);
+                    config.authenticationEntryPoint(authenticationEntryPoint);
+                })
+                .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v2/api-docs/**").permitAll()
+                        .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register")
+                        .permitAll()
+                        .requestMatchers("/api/barber/**").hasAnyAuthority("STAFF")
+                        // .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
 
-                       .anyRequest().authenticated())
-               .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-               .build();
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
 }

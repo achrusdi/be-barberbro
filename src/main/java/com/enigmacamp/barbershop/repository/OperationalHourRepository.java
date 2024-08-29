@@ -1,9 +1,10 @@
 package com.enigmacamp.barbershop.repository;
 
-import com.enigmacamp.barbershop.model.entity.BarbersAvatar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.enigmacamp.barbershop.model.entity.OperationalHour;
+
 @Repository
-public interface BarbersAvatarRepoository extends JpaRepository<BarbersAvatar,String> {
+public interface OperationalHourRepository extends JpaRepository<OperationalHour, String> {
 }

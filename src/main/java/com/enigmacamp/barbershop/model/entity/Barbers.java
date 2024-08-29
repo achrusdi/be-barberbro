@@ -23,14 +23,29 @@ public class Barbers {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "contact_number", nullable = false)
+    private String contact_number;
 
-    @Column(name = "lat_location", nullable = false)
-    private Double latitudeLocation;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
-    @Column(name = "long_location", nullable = false)
-    private Double longitudeLocation;
+    @Column(name = "street_address", nullable = false)
+    private String street_address;
+
+    @Column(name = "state_province_region", nullable = false)
+    private String state_province_region;
+
+    @Column(name = "postal_zip_code", nullable = false)
+    private String postal_zip_code;
+
+    @Column(name = "country", nullable = false)
+    private String country;
+
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
 
     @Column(name = "description")
     private String description;
@@ -45,13 +60,9 @@ public class Barbers {
     @Column(name = "verified", nullable = false)
     private Boolean verified;
 
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BarberStatus status;
-
     @OneToOne
-    @JoinColumn(name = "id_barbers_avatar")
-    private BarbersAvatar barbersAvatar;
+    @JoinColumn(name = "barbershop_profile_picture_id")
+    private BarberProfilePicture barbershop_profile_picture_id;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
@@ -61,7 +72,23 @@ public class Barbers {
 
     public BarberResponse toResponse() {
         return BarberResponse.builder()
-                .barberId(id)
+                .id(this.id)
+                .name(this.name)
+                .contact_number(this.contact_number)
+                .email(this.email)
+                .street_address(this.street_address)
+                .state_province_region(this.state_province_region)
+                .postal_zip_code(this.postal_zip_code)
+                .country(this.country)
+                .latitude(this.latitude)
+                .longitude(this.longitude)
+                .description(this.description)
+                .userId(this.userId)
+                .balance(this.balance)
+                .verified(this.verified)
+                .barbershop_profile_picture_id(this.barbershop_profile_picture_id)
+                .createdAt(this.createdAt)
+                .updateAt(this.updateAt)
                 .build();
     }
 

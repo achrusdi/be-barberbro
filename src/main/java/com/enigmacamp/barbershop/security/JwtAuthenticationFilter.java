@@ -38,12 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (bearerToken != null && jwtService.verifyJwtToken(bearerToken)) {
                 Map<String, String> userInfo = jwtService.getUserInfoByToken(bearerToken);
+                System.out.println("User info: " + userInfo);
                 UserDetails user = userService.loadUserById(userInfo.get("userId"));
+                System.out.println("User: " + user);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user.getUsername(),
                         null,
                         user.getAuthorities()
                 );
+                System.out.println("User Authority: " + user.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
