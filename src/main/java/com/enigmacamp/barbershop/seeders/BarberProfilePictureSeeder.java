@@ -23,7 +23,7 @@ public class BarberProfilePictureSeeder {
             BarberProfilePicture barberProfilePicture = BarberProfilePicture.builder()
                     .id("default1")
                     .name("default.jpg")
-                    .path("http://localhost:8080/assets/images/barbershop/default.jpg")
+                    .path("/assets/images/barbershop/default.jpg")
                     .size(0L)
                     .contentType("image/jpeg")
                     .createdAt(System.currentTimeMillis())

@@ -7,6 +7,8 @@ import lombok.Data;
 
 @Data
 public class BarberRequest {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String id;
     private String name;
     private String contact_number;
     private String email;

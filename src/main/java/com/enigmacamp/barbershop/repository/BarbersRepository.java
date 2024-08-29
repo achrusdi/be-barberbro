@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BarbersRepository extends JpaRepository<Barbers, String> {
+    Barbers findByEmail(String email);
 }

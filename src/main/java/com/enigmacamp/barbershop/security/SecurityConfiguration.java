@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v2/api-docs/**").permitAll()
-                        .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register")
+                        .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers")
                         .permitAll()
                         .requestMatchers("/api/barber/**").hasAnyAuthority("STAFF")
                         // .requestMatchers("/api/**").permitAll()

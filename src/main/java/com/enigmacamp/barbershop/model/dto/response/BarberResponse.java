@@ -15,13 +15,14 @@ public class BarberResponse {
     private String contact_number;
     private String email;
     private String street_address;
+    private String city;
     private String state_province_region;
     private String postal_zip_code;
     private String country;
     private Double latitude;
     private Double longitude;
     private String description;
-    private Users userId;
+    // private Users userId;
     private float balance;
     private Boolean verified;
     private BarberProfilePicture barbershop_profile_picture_id;
@@ -35,13 +36,14 @@ public class BarberResponse {
                 .contact_number(contact_number)
                 .email(email)
                 .street_address(street_address)
+                .city(city)
                 .state_province_region(state_province_region)
                 .postal_zip_code(postal_zip_code)
                 .country(country)
                 .latitude(latitude)
                 .longitude(longitude)
                 .description(description)
-                .userId(userId)
+                // .userId(userId)
                 .balance(balance)
                 .verified(verified)
                 .createdAt(createdAt)

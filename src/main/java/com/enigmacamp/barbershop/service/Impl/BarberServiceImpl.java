@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -62,4 +64,44 @@ public class BarberServiceImpl implements BarberService {
             throw new RuntimeException(e);
         }
     }
+
+    public Barbers getByEmail(String email) {
+        return barbersRepository.findByEmail(email);
+    }
+
+    @Override
+    public Barbers update(HttpServletRequest srvrequest, BarberRequest request) {
+        try {
+            Users user = jwtHelpers.getUser(srvrequest);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+            }
+            Barbers barbers = barbersRepository.getById(request.getId());
+            if (barbers == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
+            }
+            barbers.setName(request.getName());
+            barbers.setContact_number(request.getContact_number());
+            barbers.setEmail(request.getEmail());
+            barbers.setStreet_address(request.getStreet_address());
+            barbers.setState_province_region(request.getState_province_region());
+            barbers.setPostal_zip_code(request.getPostal_zip_code());
+            barbers.setCountry(request.getCountry());
+            barbers.setLatitude(request.getLatitude());
+            barbers.setLongitude(request.getLongitude());
+            barbers.setDescription(request.getDescription());
+            barbers.setUserId(user);
+            barbers.setUpdateAt(System.currentTimeMillis());
+            barbers.setCity(request.getCity());
+            barbers.setBarbershop_profile_picture_id(request.getBarbershop_profile_picture_id());
+            return barbersRepository.save(barbers);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Barbers> getAll() {
+        return barbersRepository.findAll();
+    }
+
 }
