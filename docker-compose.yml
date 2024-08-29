@@ -26,11 +26,14 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     depends_on:
       - db
+    volumes:
+      - assets-volume:/app/src/main/resources/static/assets/
     networks:
       - springboot-network
 
 volumes:
   postgres-data-barberbro:
+  assets-volume:
 
 networks:
   springboot-network:
