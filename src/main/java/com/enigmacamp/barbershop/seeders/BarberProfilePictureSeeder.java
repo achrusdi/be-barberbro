@@ -18,7 +18,8 @@ public class BarberProfilePictureSeeder {
 
     @PostConstruct
     public void seed() {
-        if (!barberProfilePictureRepository.existsById("default1")) {
+        BarberProfilePicture barbershop_profile_picture = barberProfilePictureRepository.getByName("default.jpg");
+        if (barbershop_profile_picture == null) {
             BarberProfilePicture barberProfilePicture = BarberProfilePicture.builder()
                     .id("default1")
                     .name("default.jpg")
