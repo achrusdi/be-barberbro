@@ -32,6 +32,9 @@ public class Barbers {
     @Column(name = "street_address", nullable = false)
     private String street_address;
 
+    @Column(name = "city", nullable = false)
+    private String city;
+
     @Column(name = "state_province_region", nullable = false)
     private String state_province_region;
 

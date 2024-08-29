@@ -14,6 +14,7 @@ public class BarberRequest {
     private String password;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String role;
+    private String city;
     private String street_address;
     private String state_province_region;
     private String postal_zip_code;

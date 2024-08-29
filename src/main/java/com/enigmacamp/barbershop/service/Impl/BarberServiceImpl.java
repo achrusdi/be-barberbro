@@ -51,6 +51,7 @@ public class BarberServiceImpl implements BarberService {
                     .verified(false)
                     .createdAt(System.currentTimeMillis())
                     .updateAt(System.currentTimeMillis())
+                    .city(request.getCity())
                     .barbershop_profile_picture_id(request.getBarbershop_profile_picture_id())
                     .build();
 
