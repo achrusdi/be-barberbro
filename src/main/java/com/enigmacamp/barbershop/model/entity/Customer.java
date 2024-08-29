@@ -25,12 +25,12 @@ public class Customer {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "gender", nullable = false)
-    private String gender;
+    @Column(name = "isMale", nullable = true)
+    private Boolean isMale;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone", nullable = true)
     private String phone;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = true)
     private String address;
 }

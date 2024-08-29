@@ -10,7 +10,7 @@ import com.enigmacamp.barbershop.model.dto.response.RegisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthService {
-    RegisterResponse regiserUser(RegisterRequest request);
+    RegisterResponse registerCustomer(RegisterRequest request, HttpServletRequest srvrequest);
 
     BarberRegisterResponse registerBarber(BarberRegisterRequest request, HttpServletRequest srvrequest);
 

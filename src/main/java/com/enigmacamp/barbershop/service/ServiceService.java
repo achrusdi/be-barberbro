@@ -6,4 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface ServiceService {
     Service create(HttpServletRequest srvrequest, Service service);
+
+    Service getById(String id);
 }

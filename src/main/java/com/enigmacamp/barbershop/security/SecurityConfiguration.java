@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers")
                         .permitAll()
                         .requestMatchers("/api/barber/**").hasAnyAuthority("STAFF")
+                        .requestMatchers("/api/bookings/**").hasAnyAuthority("CUSTOMER")
                         // .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/assets/**").permitAll()
 

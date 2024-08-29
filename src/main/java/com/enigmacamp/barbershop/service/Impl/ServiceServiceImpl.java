@@ -32,4 +32,9 @@ public class ServiceServiceImpl implements ServiceService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public Service getById(String id) {
+        return serviceRepository.findById(id).orElse(null);
+    }
 }

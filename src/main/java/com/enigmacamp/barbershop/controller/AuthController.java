@@ -32,11 +32,11 @@ public class AuthController {
     private static final Logger logger = LogManager.getLogger(AuthService.class);
 
     @PostMapping("/customer/register")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody RegisterRequest request, HttpServletRequest srvrequest) {
         request.setRole(UserRole.CUSTOMER.name());
         logger.info("Accessed Endpoint : " + "/register");
 
-        RegisterResponse response = authService.regiserUser(request);
+        RegisterResponse response = authService.registerCustomer(request, srvrequest);
         return ResponseEntity.ok(CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Successfully registered new account")

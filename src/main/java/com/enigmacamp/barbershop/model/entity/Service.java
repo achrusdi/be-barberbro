@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.model.entity;
 
+import com.enigmacamp.barbershop.model.dto.response.ServiceResponse;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,4 +31,11 @@ public class Service {
 
     private String service_name;
     private Double price;
+
+    public ServiceResponse toResponse() {
+        return ServiceResponse.builder()
+                .service_name(this.service_name)
+                .price(this.price)
+                .build();
+    }
 }

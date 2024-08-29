@@ -1,6 +1,5 @@
 package com.enigmacamp.barbershop.model.entity;
 
-import com.enigmacamp.barbershop.constant.BarberStatus;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 
 import jakarta.persistence.*;

@@ -40,10 +40,11 @@ import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
 import com.enigmacamp.barbershop.model.dto.request.ServicesRequest;
 import com.enigmacamp.barbershop.model.dto.request.SocialMediaRequest;
 import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
-import com.enigmacamp.barbershop.model.entity.Barbers;
+import com.enigmacamp.barbershop.model.entity.Customer;
 import com.enigmacamp.barbershop.model.entity.OperationalHour;
 import com.enigmacamp.barbershop.model.entity.SocialMedia;
 import com.enigmacamp.barbershop.service.BarbersProfilePictureService;
+import com.enigmacamp.barbershop.service.CustomerService;
 import com.enigmacamp.barbershop.service.OperationalHourService;
 import com.enigmacamp.barbershop.service.ServiceService;
 import com.enigmacamp.barbershop.service.SocialMediaService;
@@ -61,10 +62,11 @@ public class AuthServiceImpl implements AuthService {
         private final ServiceService serviceService;
         private final SocialMediaService socialMediaService;
         private final BarbersProfilePictureService barbersProfilePictureService;
+        private final CustomerService customerService;
 
         @Transactional(rollbackFor = Exception.class)
         @Override
-        public RegisterResponse regiserUser(RegisterRequest request) {
+        public RegisterResponse registerCustomer(RegisterRequest request, HttpServletRequest srvrequest) {
                 try {
                         Role role = roleService.getOrCreate(UserRole.valueOf(request.getRole()));
 
@@ -78,9 +80,29 @@ public class AuthServiceImpl implements AuthService {
 
                         userRepository.saveAndFlush(user);
 
-                        // List<String> roles =
-                        // user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                        // .toList();
+                        LoginResponse loginResponse = login(LoginRequest.builder()
+                                        .email(request.getEmail()).password(request.getPassword()).build());
+
+                        srvrequest = new HttpServletRequestWrapper(srvrequest) {
+                                @Override
+                                public String getHeader(String name) {
+                                        if ("Authorization".equals(name)) {
+                                                return "Bearer " + loginResponse.getToken();
+                                        }
+                                        return super.getHeader(name);
+                                }
+                        };
+
+                        Customer customer = Customer.builder()
+                                        .name(request.getEmail())
+                                        .userId(user)
+                                        .address(null)
+                                        .isMale(null)
+                                        .phone(null)
+                                        .address(null)
+                                        .build();
+
+                        customerService.create(customer, srvrequest);
 
                         return RegisterResponse.builder()
                                         .email(user.getUsername())

@@ -20,7 +20,7 @@ public class Ratings {
 
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
-    private Bookings bookingId;
+    private Booking bookingId;
 
     @Column(name = "rating", nullable = false)
     private Integer rating;

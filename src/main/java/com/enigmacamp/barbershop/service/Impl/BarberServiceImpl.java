@@ -104,4 +104,8 @@ public class BarberServiceImpl implements BarberService {
         return barbersRepository.findAll();
     }
 
+    public Barbers getById(String id) {
+        return barbersRepository.findById(id).orElse(null);
+    }
+
 }
