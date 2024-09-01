@@ -5,6 +5,7 @@ import java.util.List;
 import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
+import com.enigmacamp.barbershop.model.entity.Users;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -18,4 +19,6 @@ public interface BarberService {
     List<Barbers> getAll();
 
     Barbers getById(String id);
+
+    Barbers getByUserId(Users user);
 }

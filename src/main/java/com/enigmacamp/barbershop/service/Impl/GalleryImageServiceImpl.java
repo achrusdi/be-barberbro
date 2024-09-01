@@ -15,22 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.enigmacamp.barbershop.constant.ResponseMessage;
 import com.enigmacamp.barbershop.model.dto.request.GalleryImageRequest;
 import com.enigmacamp.barbershop.model.dto.response.GalleryImageResponse;
-import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.GalleryImage;
 import com.enigmacamp.barbershop.model.entity.Users;
-import com.enigmacamp.barbershop.repository.BarbersProfilePictureRepository;
 import com.enigmacamp.barbershop.repository.BarbersRepository;
 import com.enigmacamp.barbershop.repository.GalleryImageRepository;
-import com.enigmacamp.barbershop.repository.PortfolioRepository;
 import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.service.GalleryImageService;
-import com.enigmacamp.barbershop.util.AuthTokenExtractor;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
 import jakarta.annotation.PostConstruct;
@@ -46,15 +41,12 @@ public class GalleryImageServiceImpl implements GalleryImageService {
     private final GalleryImageRepository galleryImageRepository;
     private final JwtHelpers jwtHelpers;
     private final BarberService barberService;
-    private final BarbersRepository barbersRepository;
     private final String mainPath = "src/main/resources/static";
     private final String secondPath = "/assets/images/gallery-images";
 
     @Autowired
     public GalleryImageServiceImpl(@Value(mainPath + secondPath) String directoryPath,
-            GalleryImageRepository galleryImageRepository, JwtHelpers jwtHelpers, BarberService barberService,
-            BarbersRepository barbersRepository) {
-        this.barbersRepository = barbersRepository;
+            GalleryImageRepository galleryImageRepository, JwtHelpers jwtHelpers, BarberService barberService) {
         this.barberService = barberService;
         this.jwtHelpers = jwtHelpers;
         this.directoryPath = Paths.get(directoryPath);
@@ -104,7 +96,8 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                 String uniqueFilename = UUID.randomUUID().toString() + extension;
                 Path filePath = directoryPath.resolve(uniqueFilename);
                 Files.copy(image.getInputStream(), filePath);
-                // String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+                // String baseUrl =
+                // ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
                 GalleryImage galleryImage = GalleryImage.builder()
                         .name(uniqueFilename)
@@ -142,13 +135,16 @@ public class GalleryImageServiceImpl implements GalleryImageService {
         return responses;
     }
 
+    @Override
     public Resource getById(String id) {
         return null;
     }
 
+    @Override
     public void deleteById(String id) {
     }
 
+    @Override
     public GalleryImage getByName(String name) {
         return null;
     }

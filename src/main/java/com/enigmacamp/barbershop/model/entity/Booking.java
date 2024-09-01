@@ -29,7 +29,8 @@ import lombok.NoArgsConstructor;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String booking_id;
+    @Column(name = "booking_id", nullable = false)
+    private String bookingId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
@@ -63,6 +64,7 @@ public class Booking {
 
     public BookingResponse toResponse() {
         return BookingResponse.builder()
+                .booking_id(this.bookingId)
                 .customer_id(customerId.getId())
                 .barber_id(barberId.getId())
                 .services(services.stream().map(service -> service.toResponse()).toList())

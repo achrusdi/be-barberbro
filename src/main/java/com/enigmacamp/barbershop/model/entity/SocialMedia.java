@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.model.entity;
 
+import com.enigmacamp.barbershop.model.dto.response.SocialMediaResponse;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,4 +31,12 @@ public class SocialMedia {
 
     private String platform_name;
     private String platform_url;
+
+    public SocialMediaResponse toResponse() {
+        return SocialMediaResponse.builder()
+                .social_media_id(social_media_id)
+                .platform_name(platform_name)
+                .platform_url(platform_url)
+                .build();
+    }
 }

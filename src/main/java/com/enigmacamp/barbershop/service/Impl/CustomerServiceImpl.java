@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer getByUserId(Users user) {
         return customerRepository.findByUserId(user);
+    }
+
+    @Override
+    public List<Customer> getCustomers() {
+        return customerRepository.findAll();
     }
 }

@@ -2,13 +2,14 @@ package com.enigmacamp.barbershop.model.entity;
 
 import java.time.LocalTime;
 
+import com.enigmacamp.barbershop.model.dto.response.OperationalHourResponse;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -35,4 +36,14 @@ public class OperationalHour {
     private String day;
     private LocalTime opening_time;
     private LocalTime closing_time;
+
+    public OperationalHourResponse toResponse() {
+        return OperationalHourResponse.builder()
+                .operating_hours_id(operating_hours_id)
+                .barbershop_id(barbershop_id.getId())
+                .day(day)
+                .opening_time(opening_time.toString())
+                .closing_time(closing_time.toString())
+                .build();
+    }
 }

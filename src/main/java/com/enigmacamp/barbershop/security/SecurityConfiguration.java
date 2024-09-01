@@ -32,10 +32,15 @@ public class SecurityConfiguration {
                 .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v2/api-docs/**").permitAll()
-                        .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers")
+                        .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers",
+                                "/api/barbers/{id}", "/api/payments/{id}/update", "/api/customers")
                         .permitAll()
-                        .requestMatchers("/api/barber/**").hasAnyAuthority("STAFF")
-                        .requestMatchers("/api/bookings/**").hasAnyAuthority("CUSTOMER")
+                        .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
+                        .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel", "/api/bookings/{id}/complete").hasAnyAuthority("STAFF")
+                        .requestMatchers("/api/bookings/**", "/api/payments/**", "/api/customers/current")
+                        .hasAnyAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/api/customers/current").hasAnyAuthority("CUSTOMER")
+                        .requestMatchers("/api/customers").hasAnyAuthority("ADMIN")
                         // .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/assets/**").permitAll()
 

@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.model.entity;
 
+import com.enigmacamp.barbershop.model.dto.response.PaymentResponse;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,9 +39,25 @@ public class Payment {
     @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
+    @Column(name = "midtrans_payment_url", nullable = true)
+    private String midtransPaymentUrl;
+
     @Column(name = "transaction_date", nullable = false)
     private Long transactionDate;
 
     @Column(name = "created_at", nullable = false)
     private Long createdAt;
+
+    public PaymentResponse toResponse() {
+        return PaymentResponse.builder()
+                .paymentId(payment_id)
+                .bookingId(bookingId.getBookingId())
+                .amount(amount)
+                .paymentMethod(paymentMethod)
+                .paymentStatus(paymentStatus)
+                .midtransPaymentUrl(midtransPaymentUrl)
+                .transactionDate(transactionDate)
+                .createdAt(createdAt)
+                .build();
+    }
 }

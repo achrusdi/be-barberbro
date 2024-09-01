@@ -1,7 +1,5 @@
 package com.enigmacamp.barbershop.model.dto.response;
 
-import com.enigmacamp.barbershop.model.entity.Barbers;
-
 import lombok.Builder;
 import lombok.Data;
 

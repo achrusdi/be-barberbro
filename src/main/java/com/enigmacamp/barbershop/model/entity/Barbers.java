@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.model.entity;
 
+import java.util.List;
+
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 
 import jakarta.persistence.*;
@@ -66,6 +68,18 @@ public class Barbers {
     @JoinColumn(name = "barbershop_profile_picture_id")
     private BarberProfilePicture barbershop_profile_picture_id;
 
+    @OneToMany(mappedBy = "barbershop_id")
+    private List<OperationalHour> operationalHours;
+
+    @OneToMany(mappedBy = "barbershop_id")
+    private List<Service> services;
+
+    @OneToMany(mappedBy = "barbershop_id")
+    private List<SocialMedia> social_media;
+
+    @OneToMany(mappedBy = "barbershopId")
+    private List<Review> reviews;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
 
@@ -90,6 +104,11 @@ public class Barbers {
                 .balance(this.balance)
                 .verified(this.verified)
                 .barbershop_profile_picture_id(this.barbershop_profile_picture_id)
+                .operational_hours(this.operationalHours == null ? null
+                        : this.operationalHours.stream().map(OperationalHour::toResponse).toList())
+                .services(this.services == null ? null : services.stream().map(Service::toResponse).toList())
+                .social_media(
+                        this.social_media == null ? null : social_media.stream().map(SocialMedia::toResponse).toList())
                 .createdAt(this.createdAt)
                 .updateAt(this.updateAt)
                 .build();

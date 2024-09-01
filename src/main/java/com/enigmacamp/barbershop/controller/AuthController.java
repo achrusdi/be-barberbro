@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.enigmacamp.barbershop.constant.UserRole;
 import com.enigmacamp.barbershop.model.dto.request.BarberRegisterRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberRegisterResponse;
-import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +31,8 @@ public class AuthController {
     private static final Logger logger = LogManager.getLogger(AuthService.class);
 
     @PostMapping("/customer/register")
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody RegisterRequest request, HttpServletRequest srvrequest) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerCustomer(@RequestBody RegisterRequest request,
+            HttpServletRequest srvrequest) {
         request.setRole(UserRole.CUSTOMER.name());
         logger.info("Accessed Endpoint : " + "/register");
 
@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<BarberRegisterResponse>> registerBarber(
             @RequestBody BarberRegisterRequest request,
             HttpServletRequest srvrequest) {
-        System.out.println("registerBarber" + request);
+
         BarberRegisterResponse response = authService.registerBarber(request, srvrequest);
 
         if (response == null) {

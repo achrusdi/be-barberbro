@@ -94,7 +94,11 @@ public class AuthServiceImpl implements AuthService {
                         };
 
                         Customer customer = Customer.builder()
-                                        .name(request.getEmail())
+                                        .firstName(null)
+                                        .surname(null)
+                                        .email(request.getEmail())
+                                        .about(null)
+                                        .dateOfBirth(null)
                                         .userId(user)
                                         .address(null)
                                         .isMale(null)
@@ -164,6 +168,7 @@ public class AuthServiceImpl implements AuthService {
                         BarberRequest barbershop = request.getBarbershop();
                         BarberProfilePicture barbershop_profile_picture = barbersProfilePictureService
                                         .getByName("default.jpg");
+
                         barbershop.setBarbershop_profile_picture_id(barbershop_profile_picture);
 
                         srvrequest = new HttpServletRequestWrapper(srvrequest) {
@@ -178,37 +183,47 @@ public class AuthServiceImpl implements AuthService {
 
                         BarberResponse barbers = barberService.create(srvrequest, barbershop);
 
-                        for (OperationalHoursRequest operationalHour : request.getOperational_hours()) {
-                                OperationalHour operationalHourEntity = OperationalHour.builder()
-                                                .day(operationalHour.getDay().toString())
-                                                .opening_time(LocalTime.parse(operationalHour.getOpening_time()))
-                                                .closing_time(LocalTime.parse(operationalHour.getClosing_time()))
-                                                .barbershop_id(barbers.toEntity())
-                                                .build();
+                        if (request.getOperational_hours() != null) {
+                                for (OperationalHoursRequest operationalHour : request.getOperational_hours()) {
+                                        OperationalHour operationalHourEntity = OperationalHour.builder()
+                                                        .day(operationalHour.getDay().toString())
+                                                        .opening_time(LocalTime
+                                                                        .parse(operationalHour.getOpening_time()))
+                                                        .closing_time(LocalTime
+                                                                        .parse(operationalHour.getClosing_time()))
+                                                        .barbershop_id(barbers.toEntity())
+                                                        .build();
 
-                                operationalHourService.create(srvrequest, operationalHourEntity);
+                                        operationalHourService.create(srvrequest, operationalHourEntity);
+                                }
                         }
 
-                        for (ServicesRequest service : request.getServices()) {
-                                com.enigmacamp.barbershop.model.entity.Service serviceEntity = com.enigmacamp.barbershop.model.entity.Service
-                                                .builder()
-                                                .service_name(service.getService_name())
-                                                .price(service.getPrice())
-                                                .barbershop_id(barbers.toEntity())
-                                                .build();
+                        if (request.getServices() != null) {
 
-                                serviceService.create(srvrequest, serviceEntity);
+                                for (ServicesRequest service : request.getServices()) {
+                                        com.enigmacamp.barbershop.model.entity.Service serviceEntity = com.enigmacamp.barbershop.model.entity.Service
+                                                        .builder()
+                                                        .service_name(service.getService_name())
+                                                        .price(service.getPrice())
+                                                        .barbershop_id(barbers.toEntity())
+                                                        .build();
+
+                                        serviceService.create(srvrequest, serviceEntity);
+                                }
                         }
 
-                        for (SocialMediaRequest socialMedia : request.getSocial_media()) {
-                                SocialMedia socialMediaEntity = SocialMedia.builder()
-                                                .platform_name(socialMedia.getPlatform_name())
-                                                .platform_url(socialMedia.getPlatform_url())
-                                                .barbershop_id(barbers.toEntity())
-                                                .build();
+                        if (request.getSocial_media() != null) {
 
-                                socialMediaService.create(srvrequest, socialMediaEntity);
+                                for (SocialMediaRequest socialMedia : request.getSocial_media()) {
+                                        SocialMedia socialMediaEntity = SocialMedia.builder()
+                                                        .platform_name(socialMedia.getPlatform_name())
+                                                        .platform_url(socialMedia.getPlatform_url())
+                                                        .barbershop_id(barbers.toEntity())
+                                                        .build();
 
+                                        socialMediaService.create(srvrequest, socialMediaEntity);
+
+                                }
                         }
 
                         return BarberRegisterResponse.builder().email(user.getUsername())

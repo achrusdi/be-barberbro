@@ -2,8 +2,6 @@ package com.enigmacamp.barbershop.util;
 
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.service.UserService;
 

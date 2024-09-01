@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 @Builder
 public class BookingResponse {
+    private String booking_id;
+    
     private String customer_id;
 
     private String barber_id;

@@ -2,7 +2,6 @@ package com.enigmacamp.barbershop.model.dto.request;
 
 import java.util.List;
 
-import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -18,9 +17,4 @@ public class BookingRequest {
 
     @JsonProperty("booking_time")
     private String bookingTime;
-
-    private BookingStatus status;
-
-    @JsonProperty("total_price")
-    private Double totalPrice;
 }

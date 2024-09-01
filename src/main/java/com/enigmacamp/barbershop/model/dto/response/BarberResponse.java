@@ -1,8 +1,9 @@
 package com.enigmacamp.barbershop.model.dto.response;
 
+import java.util.List;
+
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
-import com.enigmacamp.barbershop.model.entity.Users;
 
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class BarberResponse {
     private float balance;
     private Boolean verified;
     private BarberProfilePicture barbershop_profile_picture_id;
+    private List<OperationalHourResponse> operational_hours;
+    private List<ServiceResponse> services;
+    private List<SocialMediaResponse> social_media;
     private Long createdAt;
     private Long updateAt;
 

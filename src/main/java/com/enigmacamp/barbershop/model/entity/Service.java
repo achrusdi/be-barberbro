@@ -34,6 +34,7 @@ public class Service {
 
     public ServiceResponse toResponse() {
         return ServiceResponse.builder()
+                .service_id(this.service_id)
                 .service_name(this.service_name)
                 .price(this.price)
                 .build();

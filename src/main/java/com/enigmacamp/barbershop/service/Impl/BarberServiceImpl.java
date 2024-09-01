@@ -11,9 +11,7 @@ import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.repository.BarbersRepository;
-import com.enigmacamp.barbershop.security.JwtService;
 import com.enigmacamp.barbershop.service.BarberService;
-import com.enigmacamp.barbershop.util.AuthTokenExtractor;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class BarberServiceImpl implements BarberService {
 
     private final BarbersRepository barbersRepository;
-    private final AuthTokenExtractor authTokenExtractor;
-    private final JwtService jwtService;
     private final JwtHelpers jwtHelpers;
 
     @Override
@@ -65,6 +61,7 @@ public class BarberServiceImpl implements BarberService {
         }
     }
 
+    @Override
     public Barbers getByEmail(String email) {
         return barbersRepository.findByEmail(email);
     }
@@ -100,12 +97,23 @@ public class BarberServiceImpl implements BarberService {
         }
     }
 
+    @Override
     public List<Barbers> getAll() {
         return barbersRepository.findAll();
     }
 
+    @Override
     public Barbers getById(String id) {
         return barbersRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Barbers getByUserId(Users user) {
+        try {
+            return barbersRepository.findByUserId(user).orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
