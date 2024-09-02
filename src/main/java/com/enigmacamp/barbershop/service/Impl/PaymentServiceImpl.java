@@ -17,10 +17,12 @@ import org.springframework.web.client.RestClient;
 import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.PaymentStatus;
 import com.enigmacamp.barbershop.model.dto.request.MidtransRequest;
+import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Booking;
 import com.enigmacamp.barbershop.model.entity.Customer;
 import com.enigmacamp.barbershop.model.entity.Payment;
 import com.enigmacamp.barbershop.repository.PaymentRepository;
+import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.service.BookingService;
 import com.enigmacamp.barbershop.service.PaymentService;
 
@@ -30,13 +32,15 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingService bookingService;
     private final RestClient restClient;
+    private final BarberService barberService;
     private final String MIDTRANS_KEY;
     private final String MIDTRANS_URL;
 
     @Autowired
     public PaymentServiceImpl(@Value("${midtrans.api.server-key}") String secretKey,
             @Value("${midtrans.api.snap-url}") String snapUrl, RestClient restClient,
-            PaymentRepository paymentRepository, BookingService bookingService) {
+            PaymentRepository paymentRepository, BookingService bookingService, BarberService barberService) {
+        this.barberService = barberService;
         this.bookingService = bookingService;
         this.paymentRepository = paymentRepository;
         this.restClient = restClient;
@@ -114,6 +118,12 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment updatePaymentStatus(Payment payment, Booking booking) {
         try {
 
+            if (payment.getPaymentStatus().equals(PaymentStatus.COMPLETED.name())) {
+                return payment;
+            }
+
+            Barbers barber = booking.getBarberId();
+
             String base64EncodedKey = Base64.getEncoder().encodeToString((MIDTRANS_KEY + ":").getBytes());
 
             ResponseEntity<Map<String, String>> response = restClient.get()
@@ -123,12 +133,12 @@ public class PaymentServiceImpl implements PaymentService {
                     .toEntity(new ParameterizedTypeReference<Map<String, String>>() {
                     });
 
-            System.out.println("Midtrans Response: " + response);
-
             if (response.getStatusCode().equals(HttpStatus.OK)) {
                 if (response.getBody().get("transaction_status").equals("settlement")) {
                     booking.setStatus(BookingStatus.Confirmed.name());
                     payment.setPaymentStatus(PaymentStatus.COMPLETED.name());
+                    barber.setBalance((float) (payment.getAmount() + barber.getBalance()));
+                    barberService.update(barber);
                 } else {
                     booking.setStatus(PaymentStatus.PENDING.name());
                     payment.setPaymentStatus(PaymentStatus.PENDING.name());
