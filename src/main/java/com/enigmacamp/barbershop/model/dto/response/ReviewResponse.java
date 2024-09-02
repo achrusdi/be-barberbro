@@ -17,6 +17,9 @@ public class ReviewResponse {
     @JsonProperty("barbershop_id")
     private String barbershopId;
 
+    @JsonProperty("booking_id")
+    private String bookingId;
+
     @JsonProperty("rating")
     private Integer rating;
 

@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -36,6 +37,10 @@ public class Review {
     @JoinColumn(name = "barbershop_id", referencedColumnName = "id", nullable = false)
     private Barbers barbershopId;
 
+    @OneToOne
+    @JoinColumn(name = "booking_id", referencedColumnName = "booking_id", nullable = false)
+    private Booking bookingId;
+
     @Column(name = "rating", nullable = false)
     @Min(1)
     @Max(5)
@@ -52,6 +57,7 @@ public class Review {
                 .id(id)
                 .customerId(customerId.getId())
                 .barbershopId(barbershopId.getId())
+                .bookingId(bookingId.getBookingId())
                 .rating(rating)
                 .comment(comment)
                 .createdAt(createdAt)
