@@ -7,10 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.enigmacamp.barbershop.model.dto.request.BarberNearbyRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
@@ -62,5 +64,25 @@ public class BarberController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping("/barbers/nearby")
+    public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(@RequestBody BarberNearbyRequest request) {
+        try {
+            List<Barbers> barbers = barberService.getByNearBy(request.getLatitude(), request.getLongitude());
+
+            return ResponseEntity.ok(CommonResponse.<List<BarberResponse>>builder()
+                    .statusCode(200)
+                    .message("Barbers fetched successfully")
+                    .data(barbers.stream().map(barber -> barber.toResponse()).toList())
+                    .build());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/barbers/recommendation")
+    public ResponseEntity<CommonResponse<List<BarberResponse>>> getRecommendation() {
+        return null;
     }
 }

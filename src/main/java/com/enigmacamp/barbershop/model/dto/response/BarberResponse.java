@@ -3,6 +3,7 @@ package com.enigmacamp.barbershop.model.dto.response;
 import java.util.List;
 
 import com.enigmacamp.barbershop.model.entity.Barbers;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
 
 import lombok.Builder;
@@ -26,9 +27,13 @@ public class BarberResponse {
     // private Users userId;
     private float balance;
     private Boolean verified;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BarberProfilePicture barbershop_profile_picture_id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<OperationalHourResponse> operational_hours;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ServiceResponse> services;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<SocialMediaResponse> social_media;
     private Long createdAt;
     private Long updateAt;

@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,8 @@ import com.enigmacamp.barbershop.repository.BarbersRepository;
 import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +27,7 @@ public class BarberServiceImpl implements BarberService {
 
     private final BarbersRepository barbersRepository;
     private final JwtHelpers jwtHelpers;
+    private final EntityManager entityManager;
 
     @Override
     public BarberResponse create(HttpServletRequest srvrequest, BarberRequest request) {
@@ -112,6 +117,68 @@ public class BarberServiceImpl implements BarberService {
         try {
             return barbersRepository.findByUserId(user).orElse(null);
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Barbers> getByNearBy(double latitude, double longitude) {
+        try {
+            Double distance = 5.0;
+
+            String sql = "SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, distance_km "
+                    +
+                    "FROM ( " +
+                    "    SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, " +
+                    "           (6371 * acos(cos(radians(:latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:longitude)) + "
+                    +
+                    "           sin(radians(:latitude)) * sin(radians(latitude))) " +
+                    "           ) AS distance_km " +
+                    "    FROM m_barbers " +
+                    ") AS calculated_distances " +
+                    "WHERE distance_km <= :distance " +
+                    "ORDER BY distance_km ASC";
+
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter("latitude", latitude);
+            query.setParameter("longitude", longitude);
+            query.setParameter("distance", distance);
+
+            // return query.getResultList();
+            List<Object[]> results = query.getResultList();
+
+            List<Barbers> barbersList = new ArrayList<>();
+            for (Object[] result : results) {
+                Barbers barber = new Barbers();
+                // barber.setId(((Number) result[0]).longValue());
+                barber.setId((String) result[0]);
+                barber.setName((String) result[1]);
+                // barber.setStreetAddress((String) result[2]);
+                barber.setStreet_address((String) result[2]);
+                barber.setCity((String) result[3]);
+                // barber.setStateProvinceRegion((String) result[4]);
+                barber.setState_province_region((String) result[4]);
+                barber.setCountry((String) result[5]);
+                barber.setLatitude((Double) result[6]);
+                barber.setLongitude((Double) result[7]);
+                barber.setBalance(((Number) result[8]).floatValue());
+                barber.setDescription((String) result[9]);
+                barber.setEmail((String) result[10]);
+                barber.setContact_number((String) result[11]);
+                barber.setCreatedAt(((Number) result[12]).longValue());
+                barber.setPostal_zip_code((String) result[13]);
+                barber.setVerified(((Boolean) result[14]));
+                barber.setUpdateAt(((Number) result[15]).longValue());
+                
+
+                barbersList.add(barber);
+            }
+
+            return barbersList;
+
+            // return barbersRepository.findNearbyBarbers(radius, radius, radius);
+        } catch (Exception e) {
+            // TODO: handle exception
             throw new RuntimeException(e);
         }
     }

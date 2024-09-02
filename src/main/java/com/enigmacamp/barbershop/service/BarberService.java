@@ -21,4 +21,6 @@ public interface BarberService {
     Barbers getById(String id);
 
     Barbers getByUserId(Users user);
+
+    List<Barbers> getByNearBy(double latitude, double longitude);
 }
