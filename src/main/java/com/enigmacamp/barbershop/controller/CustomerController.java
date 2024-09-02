@@ -76,7 +76,7 @@ public class CustomerController {
         if (request.getSurname() != null) customer.setSurname(request.getSurname());
         if (request.getIsMale() != null) customer.setIsMale(request.getIsMale());
         if (request.getDateOfBirth() != null) customer.setDateOfBirth(request.getDateOfBirth());
-        if (request.getEmail() != null) customer.setEmail(request.getEmail());
+        // if (request.getEmail() != null) customer.setEmail(request.getEmail());
         if (request.getPhone() != null) customer.setPhone(request.getPhone());
         if (request.getAddress() != null) customer.setAddress(request.getAddress());
         if (request.getAbout() != null) customer.setAbout(request.getAbout());

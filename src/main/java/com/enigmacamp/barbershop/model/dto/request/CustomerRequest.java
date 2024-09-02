@@ -22,7 +22,7 @@ public class CustomerRequest {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Long dateOfBirth;
 
-    private String email;
+    // private String email;
 
     private String phone;
 

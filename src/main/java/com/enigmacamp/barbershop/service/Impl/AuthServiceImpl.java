@@ -35,7 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.enigmacamp.barbershop.model.dto.request.AdminRegisterRequest;
 import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
 import com.enigmacamp.barbershop.model.dto.request.ServicesRequest;
 import com.enigmacamp.barbershop.model.dto.request.SocialMediaRequest;
@@ -231,6 +233,50 @@ public class AuthServiceImpl implements AuthService {
 
                 } catch (DataIntegrityViolationException e) {
                         throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exist");
+                }
+        }
+
+        @Override
+        @Transactional(rollbackFor = Exception.class)
+        public RegisterResponse registerAdmin(AdminRegisterRequest request) {
+
+                String password = request.getPassword();
+                String email = request.getEmail();
+
+                if (password == null) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password cannot be null");
+                }
+
+                if (email == null) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email cannot be null");
+                }
+
+                try {
+                        Role role = roleService.getOrCreate(UserRole.valueOf("ADMIN"));
+                        Users user = Users.builder()
+                                        .email(email)
+                                        .password(passwordEncoder.encode(request.getPassword()))
+                                        .role(List.of(role))
+                                        .createdAt(System.currentTimeMillis())
+                                        .updateAt(System.currentTimeMillis())
+                                        .build();
+                        userRepository.saveAndFlush(user);
+                        return RegisterResponse.builder().email(user.getUsername())
+                                        .role(user.getRole().get(0).getRole().name()).build();
+                } catch (DataIntegrityViolationException e) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exist");
+                }
+
+        }
+
+        @Override
+        @Transactional(rollbackFor = Exception.class)
+        public Users getUserByEmail(String email) {
+                try {
+                        return userRepository.findByEmail(email).orElse(null);
+                } catch (Exception e) {
+                        // TODO: handle exception
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
                 }
         }
 }

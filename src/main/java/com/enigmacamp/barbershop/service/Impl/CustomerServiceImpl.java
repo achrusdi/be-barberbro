@@ -39,4 +39,13 @@ public class CustomerServiceImpl implements CustomerService {
     public List<Customer> getCustomers() {
         return customerRepository.findAll();
     }
+
+    @Override
+    public Customer update(Customer customer, HttpServletRequest srvrequest) {
+        try {
+            return customerRepository.save(customer);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 }

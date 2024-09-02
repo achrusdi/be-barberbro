@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface CustomerService {
     Customer create(Customer customer, HttpServletRequest srvrequest);
 
+    Customer update(Customer customer, HttpServletRequest srvrequest);
+
     Customer getByUserId(Users user);
 
     List<Customer> getCustomers();
