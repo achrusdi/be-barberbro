@@ -53,7 +53,7 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
-        Barbers barber = barberService.getById(booking.getBarber_id());
+        Barbers barber = barberService.getBarberById(booking.getBarber_id());
 
         if (barber == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);

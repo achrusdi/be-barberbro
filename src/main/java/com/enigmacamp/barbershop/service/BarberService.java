@@ -20,11 +20,13 @@ public interface BarberService {
 
     List<BarberResponse> getAll();
 
-    Barbers getById(String id);
+    BarberResponse getById(String id);
+
+    Barbers getBarberById(String id);
 
     Barbers getByUserId(Users user);
 
-    List<Barbers> getByNearBy(double latitude, double longitude);
+    List<BarberResponse> getByNearBy(double latitude, double longitude);
 
-    Barbers getCurrentBarber(Users user);
+    BarberResponse getCurrentBarber(Users user);
 }

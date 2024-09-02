@@ -1,7 +1,6 @@
 package com.enigmacamp.barbershop.service.Impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,31 +141,68 @@ public class BarberServiceImpl implements BarberService {
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
 
-        return results.stream().map(result -> BarberResponse.builder()
-                .id((String) result[0])
-                .name((String) result[1])
-                .contact_number((String) result[2])
-                .email((String) result[3])
-                .street_address((String) result[4])
-                .city((String) result[5])
-                .state_province_region((String) result[6])
-                .postal_zip_code((String) result[7])
-                .country((String) result[8])
-                .latitude((Double) result[9])
-                .longitude((Double) result[10])
-                .description((String) result[11])
-                .balance((float) result[12])
-                .verified((Boolean) result[13])
-                .createdAt((Long) result[14])
-                .updateAt((Long) result[15])
-                .averageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue())
-                .reviewCount((Long) result[17])
-                .build()).toList();
+        return results.stream().map(result -> {
+            @SuppressWarnings("deprecation")
+            Barbers barbers = barbersRepository.getById((String) result[0]);
+
+            BarberResponse response = barbers.toResponse();
+            response.setAverageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue());
+            response.setReviewCount((Long) result[17]);
+
+            return response;
+        }).toList();
     }
 
     @Override
-    public Barbers getById(String id) {
-        return barbersRepository.findById(id).orElse(null);
+    public BarberResponse getById(String id) {
+        try {
+            String sql = "SELECT " +
+                    "b.id, " +
+                    "b.name, " +
+                    "b.contact_number, " +
+                    "b.email, " +
+                    "b.street_address, " +
+                    "b.city, " +
+                    "b.state_province_region, " +
+                    "b.postal_zip_code, " +
+                    "b.country, " +
+                    "b.latitude, " +
+                    "b.longitude, " +
+                    "b.description, " +
+                    "b.balance, " +
+                    "b.verified, " +
+                    "b.created_at, " +
+                    "b.updated_at, " +
+                    "AVG(r.rating) AS average_rating, " +
+                    "COUNT(r.id) AS review_count " +
+                    "FROM m_barbers b " +
+                    "LEFT JOIN m_bookings bo ON b.id = bo.barber_id " +
+                    "LEFT JOIN m_reviews r ON bo.booking_id = r.booking_id " +
+                    "WHERE b.id = :barberId " +
+                    "GROUP BY b.id, b.name, b.contact_number, b.email, " +
+                    "b.street_address, b.city, b.state_province_region, " +
+                    "b.postal_zip_code, b.country, b.latitude, b.longitude, " +
+                    "b.description, b.balance, b.verified, b.created_at, b.updated_at " +
+                    "ORDER BY average_rating DESC";
+
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter("barberId", id);
+
+            Object[] result = (Object[]) query.getSingleResult();
+            Barbers barbers = barbersRepository.findById(result[0].toString()).orElse(null);
+
+            if (barbers == null) {
+                return null;
+            }
+
+            BarberResponse response = barbers.toResponse();
+            response.setAverageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue());
+            response.setReviewCount((Long) result[17]);
+
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -179,12 +215,30 @@ public class BarberServiceImpl implements BarberService {
     }
 
     @Override
-    public List<Barbers> getByNearBy(double latitude, double longitude) {
+    public List<BarberResponse> getByNearBy(double latitude, double longitude) {
         try {
             Double distance = 5.0;
 
-            String sql = "SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, distance_km "
-                    +
+            String sql = "SELECT " +
+                    "b.id, " +
+                    "b.name, " +
+                    "b.street_address, " +
+                    "b.city, " +
+                    "b.state_province_region, " +
+                    "b.country, " +
+                    "b.latitude, " +
+                    "b.longitude, " +
+                    "b.balance, " +
+                    "b.description, " +
+                    "b.email, " +
+                    "b.contact_number, " +
+                    "b.created_at, " +
+                    "b.postal_zip_code, " +
+                    "b.verified, " +
+                    "b.updated_at, " +
+                    "distance_km, " +
+                    "AVG(r.rating) AS average_rating, " +
+                    "COUNT(r.id) AS review_count " +
                     "FROM ( " +
                     "    SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, "
                     +
@@ -193,8 +247,28 @@ public class BarberServiceImpl implements BarberService {
                     "           sin(radians(:latitude)) * sin(radians(latitude))) " +
                     "           ) AS distance_km " +
                     "    FROM m_barbers " +
-                    ") AS calculated_distances " +
+                    ") AS b " +
+                    "LEFT JOIN m_bookings bo ON b.id = bo.barber_id " +
+                    "LEFT JOIN m_reviews r ON bo.booking_id = r.booking_id " +
                     "WHERE distance_km <= :distance " +
+                    "GROUP BY " +
+                    "b.id, " +
+                    "b.name, " +
+                    "b.street_address, " +
+                    "b.city, " +
+                    "b.state_province_region, " +
+                    "b.country, " +
+                    "b.latitude, " +
+                    "b.longitude, " +
+                    "b.balance, " +
+                    "b.description, " +
+                    "b.email, " +
+                    "b.contact_number, " +
+                    "b.created_at, " +
+                    "b.postal_zip_code, " +
+                    "b.verified, " +
+                    "b.updated_at, " +
+                    "distance_km " +
                     "ORDER BY distance_km ASC";
 
             Query query = entityManager.createNativeQuery(sql);
@@ -202,33 +276,21 @@ public class BarberServiceImpl implements BarberService {
             query.setParameter("longitude", longitude);
             query.setParameter("distance", distance);
 
-            // return query.getResultList();
             List<Object[]> results = query.getResultList();
 
-            List<Barbers> barbersList = new ArrayList<>();
+            List<BarberResponse> barbersList = new ArrayList<>();
             for (Object[] result : results) {
-                Barbers barber = new Barbers();
-                // barber.setId(((Number) result[0]).longValue());
-                barber.setId((String) result[0]);
-                barber.setName((String) result[1]);
-                // barber.setStreetAddress((String) result[2]);
-                barber.setStreet_address((String) result[2]);
-                barber.setCity((String) result[3]);
-                // barber.setStateProvinceRegion((String) result[4]);
-                barber.setState_province_region((String) result[4]);
-                barber.setCountry((String) result[5]);
-                barber.setLatitude((Double) result[6]);
-                barber.setLongitude((Double) result[7]);
-                barber.setBalance(((Number) result[8]).floatValue());
-                barber.setDescription((String) result[9]);
-                barber.setEmail((String) result[10]);
-                barber.setContact_number((String) result[11]);
-                barber.setCreatedAt(((Number) result[12]).longValue());
-                barber.setPostal_zip_code((String) result[13]);
-                barber.setVerified(((Boolean) result[14]));
-                barber.setUpdateAt(((Number) result[15]).longValue());
 
-                barbersList.add(barber);
+                Barbers barbers = barbersRepository.findById((String) result[0]).orElse(null);
+                if (barbers == null) {
+                    continue;
+                }
+
+                BarberResponse response = barbers.toResponse();
+                response.setAverageRating(result[17] == null ? 0 : ((BigDecimal) result[17]).doubleValue());
+                response.setReviewCount((Long) result[18]);
+                barbersList.add(response);
+
             }
 
             return barbersList;
@@ -241,9 +303,70 @@ public class BarberServiceImpl implements BarberService {
     }
 
     @Override
-    public Barbers getCurrentBarber(Users user) {
+    public BarberResponse getCurrentBarber(Users user) {
         try {
-            return barbersRepository.findByUserId(user).orElse(null);
+
+            Barbers barber = barbersRepository.findByUserId(user).orElse(null);
+
+            if (barber == null) {
+                return null;
+            }
+
+            String sql = "SELECT " +
+                    "b.id, " +
+                    "b.name, " +
+                    "b.contact_number, " +
+                    "b.email, " +
+                    "b.street_address, " +
+                    "b.city, " +
+                    "b.state_province_region, " +
+                    "b.postal_zip_code, " +
+                    "b.country, " +
+                    "b.latitude, " +
+                    "b.longitude, " +
+                    "b.description, " +
+                    "b.balance, " +
+                    "b.verified, " +
+                    "b.created_at, " +
+                    "b.updated_at, " +
+                    "AVG(r.rating) AS average_rating, " +
+                    "COUNT(r.id) AS review_count " +
+                    "FROM m_barbers b " +
+                    "LEFT JOIN m_bookings bo ON b.id = bo.barber_id " +
+                    "LEFT JOIN m_reviews r ON bo.booking_id = r.booking_id " +
+                    "WHERE b.id = :barberId " +
+                    "GROUP BY b.id, b.name, b.contact_number, b.email, " +
+                    "b.street_address, b.city, b.state_province_region, " +
+                    "b.postal_zip_code, b.country, b.latitude, b.longitude, " +
+                    "b.description, b.balance, b.verified, b.created_at, b.updated_at " +
+                    "ORDER BY average_rating DESC";
+
+            Query query = entityManager.createNativeQuery(sql);
+            query.setParameter("barberId", barber.getId());
+
+            Object[] result = (Object[]) query.getSingleResult();
+            Barbers barbers = barbersRepository.findById(result[0].toString()).orElse(null);
+
+            if (barbers == null) {
+                return null;
+            }
+
+            BarberResponse response = barbers.toResponse();
+            response.setAverageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue());
+            response.setReviewCount((Long) result[17]);
+
+            return response;
+
+            // return barbersRepository.findByUserId(user).orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Barbers getBarberById(String id) {
+        try {
+            return barbersRepository.findById(id).orElse(null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

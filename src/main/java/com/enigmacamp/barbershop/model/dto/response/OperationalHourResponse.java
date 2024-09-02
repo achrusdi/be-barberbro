@@ -11,5 +11,4 @@ public class OperationalHourResponse {
     private String day;
     private String opening_time;
     private String closing_time;
-
 }

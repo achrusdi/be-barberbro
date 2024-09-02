@@ -62,6 +62,10 @@ public class BarberResponse {
                 // .userId(userId)
                 .balance(balance)
                 .verified(verified)
+                // .barbershop_profile_picture_id(barbershop_profile_picture_id)
+                // .operationalHours(operational_hours)
+                // .services(services)
+                // .social_media(social_media)
                 .createdAt(createdAt)
                 .updateAt(updateAt)
                 .build();

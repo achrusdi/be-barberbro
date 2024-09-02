@@ -1,6 +1,5 @@
 package com.enigmacamp.barbershop.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.enigmacamp.barbershop.model.dto.request.BarberNearbyRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
-import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.util.JwtHelpers;
@@ -35,12 +33,6 @@ public class BarberController {
         try {
             List<BarberResponse> barbers = barberService.getAll();
 
-            // List<BarberResponse> response = new ArrayList<>();
-
-            // if (!barbers.isEmpty()) {
-            //     response = barbers.stream().map(barber -> barber.toResponse()).toList();
-            // }
-
             return ResponseEntity.ok(CommonResponse.<List<BarberResponse>>builder()
                     .statusCode(200)
                     .message("Barbers fetched successfully")
@@ -56,14 +48,14 @@ public class BarberController {
     @GetMapping("/barbers/{id}")
     public ResponseEntity<CommonResponse<BarberResponse>> getBarberById(@PathVariable String id) {
         try {
-            Barbers barbers = barberService.getById(id);
+            BarberResponse barbers = barberService.getById(id);
             if (barbers == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
             }
             return ResponseEntity.ok(CommonResponse.<BarberResponse>builder()
                     .statusCode(200)
                     .message("Barber fetched successfully")
-                    .data(barbers.toResponse())
+                    .data(barbers)
                     .build());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -74,12 +66,12 @@ public class BarberController {
     public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(
             @RequestBody BarberNearbyRequest request) {
         try {
-            List<Barbers> barbers = barberService.getByNearBy(request.getLatitude(), request.getLongitude());
+            List<BarberResponse> barbers = barberService.getByNearBy(request.getLatitude(), request.getLongitude());
 
             return ResponseEntity.ok(CommonResponse.<List<BarberResponse>>builder()
                     .statusCode(200)
                     .message("Barbers fetched successfully")
-                    .data(barbers.stream().map(barber -> barber.toResponse()).toList())
+                    .data(barbers)
                     .build());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -94,7 +86,7 @@ public class BarberController {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
             }
 
-            Barbers barbers = barberService.getCurrentBarber(user);
+            BarberResponse barbers = barberService.getCurrentBarber(user);
 
             if (barbers == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
@@ -103,7 +95,7 @@ public class BarberController {
             return ResponseEntity.ok(CommonResponse.<BarberResponse>builder()
                     .statusCode(200)
                     .message("Barber fetched successfully")
-                    .data(barbers.toResponse())
+                    .data(barbers)
                     .build());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

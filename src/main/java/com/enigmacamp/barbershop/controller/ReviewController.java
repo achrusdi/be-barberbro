@@ -52,7 +52,7 @@ public class ReviewController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
         }
 
-        Barbers barber = barberService.getById(request.getBarbershopId());
+        Barbers barber = barberService.getBarberById(request.getBarbershopId());
 
         if (barber == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
