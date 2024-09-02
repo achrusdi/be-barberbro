@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.enigmacamp.barbershop.model.entity.BarberProfilePicture;
 
 import lombok.Builder;
@@ -27,6 +28,12 @@ public class BarberResponse {
     // private Users userId;
     private float balance;
     private Boolean verified;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("average_rating")
+    private Double averageRating;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("review_count")
+    private Long reviewCount;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private BarberProfilePicture barbershop_profile_picture_id;
     @JsonInclude(JsonInclude.Include.NON_NULL)

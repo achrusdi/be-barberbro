@@ -1,5 +1,7 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,8 +109,59 @@ public class BarberServiceImpl implements BarberService {
     }
 
     @Override
-    public List<Barbers> getAll() {
-        return barbersRepository.findAll();
+    public List<BarberResponse> getAll() {
+        String sql = "SELECT " +
+                "b.id, " +
+                "b.name, " +
+                "b.contact_number, " +
+                "b.email, " +
+                "b.street_address, " +
+                "b.city, " +
+                "b.state_province_region, " +
+                "b.postal_zip_code, " +
+                "b.country, " +
+                "b.latitude, " +
+                "b.longitude, " +
+                "b.description, " +
+                "b.balance, " +
+                "b.verified, " +
+                "b.created_at, " +
+                "b.updated_at, " +
+                "AVG(r.rating) AS average_rating, " +
+                "COUNT(r.id) AS review_count " +
+                "FROM m_barbers b " +
+                "LEFT JOIN m_bookings bo ON b.id = bo.barber_id " +
+                "LEFT JOIN m_reviews r ON bo.booking_id = r.booking_id " +
+                "GROUP BY b.id, b.name, b.contact_number, b.email, b.street_address, " +
+                "b.city, b.state_province_region, b.postal_zip_code, b.country, b.latitude, " +
+                "b.longitude, b.description, b.balance, b.verified, b.created_at, b.updated_at " +
+                "ORDER BY average_rating DESC NULLS LAST;";
+
+        Query query = entityManager.createNativeQuery(sql);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = query.getResultList();
+
+        return results.stream().map(result -> BarberResponse.builder()
+                .id((String) result[0])
+                .name((String) result[1])
+                .contact_number((String) result[2])
+                .email((String) result[3])
+                .street_address((String) result[4])
+                .city((String) result[5])
+                .state_province_region((String) result[6])
+                .postal_zip_code((String) result[7])
+                .country((String) result[8])
+                .latitude((Double) result[9])
+                .longitude((Double) result[10])
+                .description((String) result[11])
+                .balance((float) result[12])
+                .verified((Boolean) result[13])
+                .createdAt((Long) result[14])
+                .updateAt((Long) result[15])
+                .averageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue())
+                .reviewCount((Long) result[17])
+                .build()).toList();
     }
 
     @Override

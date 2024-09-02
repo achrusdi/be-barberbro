@@ -58,6 +58,9 @@ public class Barbers {
         @JoinColumn(name = "user_id", nullable = false)
         private Users userId;
 
+        @OneToMany(mappedBy = "barberId")
+        private List<Booking> bookings;
+
         @Column(name = "balance", nullable = false)
         private float balance;
 

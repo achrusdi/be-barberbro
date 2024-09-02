@@ -18,7 +18,7 @@ public interface BarberService {
 
     Barbers getByEmail(String email);
 
-    List<Barbers> getAll();
+    List<BarberResponse> getAll();
 
     Barbers getById(String id);
 

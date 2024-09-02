@@ -110,4 +110,9 @@ public class BookingServiceImpl implements BookingService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<Booking> getAll() {
+        return bookingRepository.findAll();
+    }
 }

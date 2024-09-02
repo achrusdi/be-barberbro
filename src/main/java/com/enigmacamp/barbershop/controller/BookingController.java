@@ -185,4 +185,20 @@ public class BookingController {
                 .data(booking.toResponse())
                 .build());
     }
+
+    @GetMapping("/bookings")
+    public ResponseEntity<CommonResponse<List<BookingResponse>>> getAllBooking() {
+        try {
+
+            List<Booking> bookings = bookingService.getAll();
+            return ResponseEntity.ok(CommonResponse.<List<BookingResponse>>builder()
+                    .statusCode(200)
+                    .message("List of booking")
+                    .data(bookings.stream().map(Booking::toResponse).toList())
+                    .build());
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

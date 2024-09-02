@@ -33,18 +33,18 @@ public class BarberController {
     @GetMapping("/barbers")
     public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbers() {
         try {
-            List<Barbers> barbers = barberService.getAll();
+            List<BarberResponse> barbers = barberService.getAll();
 
-            List<BarberResponse> response = new ArrayList<>();
+            // List<BarberResponse> response = new ArrayList<>();
 
-            if (!barbers.isEmpty()) {
-                response = barbers.stream().map(barber -> barber.toResponse()).toList();
-            }
+            // if (!barbers.isEmpty()) {
+            //     response = barbers.stream().map(barber -> barber.toResponse()).toList();
+            // }
 
             return ResponseEntity.ok(CommonResponse.<List<BarberResponse>>builder()
                     .statusCode(200)
                     .message("Barbers fetched successfully")
-                    .data(response)
+                    .data(barbers)
                     .build());
 
         } catch (Exception e) {

@@ -20,4 +20,6 @@ public interface BookingService {
     Booking cancel(Barbers barber, String bookingId);
 
     Booking completed(Barbers barber, String bookingId);
+
+    List<Booking> getAll();
 }
