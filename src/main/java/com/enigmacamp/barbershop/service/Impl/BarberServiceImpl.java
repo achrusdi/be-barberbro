@@ -1,7 +1,6 @@
 package com.enigmacamp.barbershop.service.Impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -103,6 +102,11 @@ public class BarberServiceImpl implements BarberService {
     }
 
     @Override
+    public Barbers update(Barbers barbers) {
+        return barbersRepository.save(barbers);
+    }
+
+    @Override
     public List<Barbers> getAll() {
         return barbersRepository.findAll();
     }
@@ -129,7 +133,8 @@ public class BarberServiceImpl implements BarberService {
             String sql = "SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, distance_km "
                     +
                     "FROM ( " +
-                    "    SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, " +
+                    "    SELECT id, name, street_address, city, state_province_region, country, latitude, longitude, balance, description, email, contact_number, created_at, postal_zip_code, verified, updated_at, "
+                    +
                     "           (6371 * acos(cos(radians(:latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:longitude)) + "
                     +
                     "           sin(radians(:latitude)) * sin(radians(latitude))) " +
@@ -169,7 +174,6 @@ public class BarberServiceImpl implements BarberService {
                 barber.setPostal_zip_code((String) result[13]);
                 barber.setVerified(((Boolean) result[14]));
                 barber.setUpdateAt(((Number) result[15]).longValue());
-                
 
                 barbersList.add(barber);
             }
@@ -183,4 +187,12 @@ public class BarberServiceImpl implements BarberService {
         }
     }
 
+    @Override
+    public Barbers getCurrentBarber(Users user) {
+        try {
+            return barbersRepository.findByUserId(user).orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

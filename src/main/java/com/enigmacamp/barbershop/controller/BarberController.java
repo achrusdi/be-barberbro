@@ -16,8 +16,11 @@ import com.enigmacamp.barbershop.model.dto.request.BarberNearbyRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
+import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.service.BarberService;
+import com.enigmacamp.barbershop.util.JwtHelpers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 public class BarberController {
     private final BarberService barberService;
+    private final JwtHelpers jwtHelpers;
 
     @GetMapping("/barbers")
     public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbers() {
@@ -67,7 +71,8 @@ public class BarberController {
     }
 
     @GetMapping("/barbers/nearby")
-    public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(@RequestBody BarberNearbyRequest request) {
+    public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(
+            @RequestBody BarberNearbyRequest request) {
         try {
             List<Barbers> barbers = barberService.getByNearBy(request.getLatitude(), request.getLongitude());
 
@@ -81,8 +86,27 @@ public class BarberController {
         }
     }
 
-    @GetMapping("/barbers/recommendation")
-    public ResponseEntity<CommonResponse<List<BarberResponse>>> getRecommendation() {
-        return null;
+    @GetMapping("/barbers/current")
+    public ResponseEntity<CommonResponse<BarberResponse>> getCurrentBarber(HttpServletRequest srvrequest) {
+        try {
+            Users user = jwtHelpers.getUser(srvrequest);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+            }
+
+            Barbers barbers = barberService.getCurrentBarber(user);
+
+            if (barbers == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
+            }
+
+            return ResponseEntity.ok(CommonResponse.<BarberResponse>builder()
+                    .statusCode(200)
+                    .message("Barber fetched successfully")
+                    .data(barbers.toResponse())
+                    .build());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }

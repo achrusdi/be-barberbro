@@ -14,6 +14,8 @@ public interface BarberService {
 
     Barbers update(HttpServletRequest srvrequest, BarberRequest request);
 
+    Barbers update(Barbers barbers);
+
     Barbers getByEmail(String email);
 
     List<Barbers> getAll();
@@ -23,4 +25,6 @@ public interface BarberService {
     Barbers getByUserId(Users user);
 
     List<Barbers> getByNearBy(double latitude, double longitude);
+
+    Barbers getCurrentBarber(Users user);
 }
