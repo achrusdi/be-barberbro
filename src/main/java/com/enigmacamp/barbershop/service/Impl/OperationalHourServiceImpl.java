@@ -43,8 +43,13 @@ public class OperationalHourServiceImpl implements OperationalHourService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OperationalHour update(OperationalHour request) {
-        return null;
+        try {
+            return operationalHourRepository.save(request);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

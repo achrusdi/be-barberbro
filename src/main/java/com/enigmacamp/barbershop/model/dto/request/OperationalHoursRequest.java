@@ -1,13 +1,16 @@
 package com.enigmacamp.barbershop.model.dto.request;
 
 import com.enigmacamp.barbershop.constant.Days;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
 public class OperationalHoursRequest {
-
+    @JsonProperty("operating_hours_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String operatingHourId;
     @JsonProperty("day")
     private Days day;
     @JsonProperty("opening_time")

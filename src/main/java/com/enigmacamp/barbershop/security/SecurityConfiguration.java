@@ -37,7 +37,9 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
                         
-                        // .requestMatchers(HttpMethod.PUT, "/api/barbers/current").hasAnyAuthority("STAFF")
+                        .requestMatchers(HttpMethod.PUT, "/api/barbers/operational-hour/current").hasAnyAuthority("STAFF")
+                        .requestMatchers(HttpMethod.POST, "/api/barbers/operational-hour/current").hasAnyAuthority("STAFF")
+                        .requestMatchers(HttpMethod.DELETE, "/api/barbers/operational-hour/current/{id}").hasAnyAuthority("STAFF")
                         .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel", "/api/bookings/{id}/complete", "/api/barbers/current").hasAnyAuthority("STAFF")
 
                         .requestMatchers("/api/payments/**", "/api/customers/current", "/api/reviews", "/api/barbers/nearby")
