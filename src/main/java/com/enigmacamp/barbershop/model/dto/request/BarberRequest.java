@@ -11,6 +11,7 @@ public class BarberRequest {
     private String id;
     private String name;
     private String contact_number;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String email;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;

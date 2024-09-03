@@ -36,12 +36,17 @@ public class SecurityConfiguration {
                                 "/api/barbers/{id}", "/api/payments/{id}/update", "/api/customers")
                         .permitAll()
                         .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
+                        
+                        // .requestMatchers(HttpMethod.PUT, "/api/barbers/current").hasAnyAuthority("STAFF")
                         .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel", "/api/bookings/{id}/complete", "/api/barbers/current").hasAnyAuthority("STAFF")
+
                         .requestMatchers("/api/payments/**", "/api/customers/current", "/api/reviews", "/api/barbers/nearby")
                         .hasAnyAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT, "/api/customers/current").hasAnyAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/bookings").hasAnyAuthority("CUSTOMER")
+
                         .requestMatchers(HttpMethod.GET, "/api/customers", "/api/bookings").hasAnyAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/barbers/{id}").hasAnyAuthority("ADMIN")
                         // .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/assets/**").permitAll()
 

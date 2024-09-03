@@ -26,7 +26,8 @@ public class BarberResponse {
     private Double longitude;
     private String description;
     // private Users userId;
-    private float balance;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Float balance;
     private Boolean verified;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("average_rating")
@@ -60,7 +61,7 @@ public class BarberResponse {
                 .longitude(longitude)
                 .description(description)
                 // .userId(userId)
-                .balance(balance)
+                // .balance(balance)
                 .verified(verified)
                 // .barbershop_profile_picture_id(barbershop_profile_picture_id)
                 // .operationalHours(operational_hours)

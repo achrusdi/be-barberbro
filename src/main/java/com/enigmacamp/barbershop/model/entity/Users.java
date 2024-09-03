@@ -25,6 +25,13 @@ public class Users implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    
+    @OneToOne(mappedBy = "userId")
+    private Barbers barbers;
+
+    @OneToOne(mappedBy = "userId")
+    private Customer customer;
+
     @Column(name = "password", nullable = false)
     private String password;
 

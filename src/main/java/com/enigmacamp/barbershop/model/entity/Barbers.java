@@ -89,6 +89,9 @@ public class Barbers {
         @Column(name = "updated_at", nullable = false)
         private Long updateAt;
 
+        @Column(name = "deleted_at", nullable = true)
+        private Long deletedAt;
+
         public BarberResponse toResponse() {
                 return BarberResponse.builder()
                                 .id(this.id)
@@ -104,7 +107,7 @@ public class Barbers {
                                 .longitude(this.longitude)
                                 .description(this.description)
                                 // .userId(this.userId)
-                                .balance(this.balance)
+                                // .balance(this.balance)
                                 .verified(this.verified)
                                 .barbershop_profile_picture_id(this.barbershop_profile_picture_id)
                                 .operational_hours(this.operationalHours == null ? null

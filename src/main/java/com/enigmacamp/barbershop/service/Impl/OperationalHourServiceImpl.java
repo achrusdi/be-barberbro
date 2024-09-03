@@ -1,7 +1,10 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.enigmacamp.barbershop.model.entity.OperationalHour;
@@ -29,6 +32,37 @@ public class OperationalHourServiceImpl implements OperationalHourService {
 
             return operationalHourRepository.save(request);
 
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public OperationalHour update(HttpServletRequest srvrequest, OperationalHour request) {
+        return null;
+    }
+
+    @Override
+    public OperationalHour update(OperationalHour request) {
+        return null;
+    }
+
+    @Override
+    public List<OperationalHour> getAll() {
+        return null;
+    }
+
+    @Override
+    public OperationalHour getById(String id) {
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean delete(String id) {
+        try {
+            operationalHourRepository.deleteById(id);
+            return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

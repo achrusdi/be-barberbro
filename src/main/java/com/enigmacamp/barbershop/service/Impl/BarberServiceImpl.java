@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
@@ -68,7 +69,12 @@ public class BarberServiceImpl implements BarberService {
 
     @Override
     public Barbers getByEmail(String email) {
-        return barbersRepository.findByEmail(email);
+        Barbers barbers = barbersRepository.findByEmail(email);
+        if (barbers.getDeletedAt() == null) {
+            return barbers;
+        }
+
+        return null;
     }
 
     @Override
@@ -103,8 +109,16 @@ public class BarberServiceImpl implements BarberService {
     }
 
     @Override
-    public Barbers update(Barbers barbers) {
-        return barbersRepository.save(barbers);
+    @Transactional(rollbackFor = Exception.class)
+    public BarberResponse update(Barbers barbers) {
+
+        try {
+            barbers = barbersRepository.save(barbers);
+
+            return getById(barbers.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -144,6 +158,10 @@ public class BarberServiceImpl implements BarberService {
         return results.stream().map(result -> {
             @SuppressWarnings("deprecation")
             Barbers barbers = barbersRepository.getById((String) result[0]);
+
+            if (barbers.getDeletedAt() != null) {
+                return null;
+            }
 
             BarberResponse response = barbers.toResponse();
             response.setAverageRating(result[16] == null ? 0 : ((BigDecimal) result[16]).doubleValue());
@@ -192,6 +210,10 @@ public class BarberServiceImpl implements BarberService {
             Barbers barbers = barbersRepository.findById(result[0].toString()).orElse(null);
 
             if (barbers == null) {
+                return null;
+            }
+
+            if (barbers.getDeletedAt() != null) {
                 return null;
             }
 
@@ -286,6 +308,10 @@ public class BarberServiceImpl implements BarberService {
                     continue;
                 }
 
+                if (barbers.getDeletedAt() != null) {
+                    continue;
+                }
+
                 BarberResponse response = barbers.toResponse();
                 response.setAverageRating(result[17] == null ? 0 : ((BigDecimal) result[17]).doubleValue());
                 response.setReviewCount((Long) result[18]);
@@ -309,6 +335,10 @@ public class BarberServiceImpl implements BarberService {
             Barbers barber = barbersRepository.findByUserId(user).orElse(null);
 
             if (barber == null) {
+                return null;
+            }
+
+            if (barber.getDeletedAt() != null) {
                 return null;
             }
 
@@ -366,7 +396,30 @@ public class BarberServiceImpl implements BarberService {
     @Override
     public Barbers getBarberById(String id) {
         try {
-            return barbersRepository.findById(id).orElse(null);
+            Barbers barbers = barbersRepository.findById(id).orElse(null);
+            if (barbers.getDeletedAt() != null) {
+                return null;
+            }
+
+            return barbers;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Boolean delete(String id) {
+        try {
+            Barbers barbers = barbersRepository.findById(id).orElse(null);
+            if (barbers == null) {
+                return false;
+            }
+
+            barbers.setDeletedAt((Long) System.currentTimeMillis());
+
+            barbersRepository.save(barbers);
+            // barbersRepository.deleteById(id);
+            return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
