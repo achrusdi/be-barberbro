@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -63,10 +64,9 @@ public class BarberController {
     }
 
     @GetMapping("/barbers/nearby")
-    public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(
-            @RequestBody BarberNearbyRequest request) {
+    public ResponseEntity<CommonResponse<List<BarberResponse>>> getBarbersNearBy(@RequestParam double latitude, @RequestParam double longitude) {
         try {
-            List<BarberResponse> barbers = barberService.getByNearBy(request.getLatitude(), request.getLongitude());
+            List<BarberResponse> barbers = barberService.getByNearBy(latitude, longitude);
 
             return ResponseEntity.ok(CommonResponse.<List<BarberResponse>>builder()
                     .statusCode(200)
