@@ -46,10 +46,8 @@ public class JwtService {
     }
 
     public boolean verifyJwtToken(String token) {
-        System.out.println("Token in verify: " + parseJwt(token));
         try {
             DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(parseJwt(token));
-            System.out.println("Decoded JWT: " + decodedJWT);
             return true;
         } catch (JWTCreationException e) {
             log.error("Invalid JWT Signature/Claims : {}", e.getMessage());

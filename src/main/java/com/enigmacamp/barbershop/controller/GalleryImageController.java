@@ -26,7 +26,6 @@ public class GalleryImageController {
     @PostMapping("/gallery-image")
     public ResponseEntity<CommonResponse<List<GalleryImageResponse>>> create(@RequestBody GalleryImageRequest request,
             HttpServletRequest srvrequest) {
-        System.out.println(request);
         List<GalleryImageResponse> galleryImages = galleryImageService.saveGalleryImages(request, srvrequest);
 
         return ResponseEntity.ok(CommonResponse.<List<GalleryImageResponse>>builder()

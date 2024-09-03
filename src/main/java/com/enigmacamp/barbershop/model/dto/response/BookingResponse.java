@@ -10,9 +10,9 @@ import lombok.Data;
 public class BookingResponse {
     private String booking_id;
     
-    private String customer_id;
+    private CustomerResponse customer;
 
-    private String barber_id;
+    private BarberResponse barber;
 
     private List<ServiceResponse> services;
 

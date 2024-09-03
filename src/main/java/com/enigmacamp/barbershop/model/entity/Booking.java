@@ -63,10 +63,13 @@ public class Booking {
     private Long updatedAt;
 
     public BookingResponse toResponse() {
+        barberId.setServices(null);
+        barberId.setOperationalHours(null);
+        barberId.setSocial_media(null);
         return BookingResponse.builder()
                 .booking_id(this.bookingId)
-                .customer_id(customerId.getId())
-                .barber_id(barberId.getId())
+                .customer(customerId.toResponse())
+                .barber(barberId.toResponse())
                 .services(services.stream().map(service -> service.toResponse()).toList())
                 .bookingDate(bookingDate)
                 .bookingTime(bookingTime.toString())

@@ -60,10 +60,7 @@ public class BookingController {
         }
 
         Customer customer = customerService.getByUserId(user);
-
-        System.out.println("user " + user);
-        System.out.println("customer " + customer);
-
+        
         if (customer == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     ResponseMessage.ERROR_NOT_FOUND);

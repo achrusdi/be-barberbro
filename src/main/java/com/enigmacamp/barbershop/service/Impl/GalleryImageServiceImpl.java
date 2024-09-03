@@ -82,8 +82,6 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
                 }
 
-                System.out.println("barber id " + user.getId());
-
                 Barbers barbers = barberService.getByEmail(user.getEmail());
 
                 if (barbers == null) {

@@ -98,8 +98,6 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setMidtransPaymentUrl(response.getBody().get("redirect_url"));
             }
 
-            System.out.println("Midtrans Response: " + response);
-
             return paymentRepository.saveAndFlush(payment);
         } catch (Exception e) {
             throw new RuntimeException(e);
