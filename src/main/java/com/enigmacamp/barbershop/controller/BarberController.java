@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.enigmacamp.barbershop.model.dto.request.BarberNearbyRequest;
 import com.enigmacamp.barbershop.model.dto.request.BarberRequest;
 import com.enigmacamp.barbershop.model.dto.response.BarberResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
@@ -62,7 +61,7 @@ public class BarberController {
                     .message("Barber fetched successfully")
                     .data(barbers)
                     .build());
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -105,7 +104,7 @@ public class BarberController {
                     .message("Barber fetched successfully")
                     .data(barbers)
                     .build());
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -160,7 +159,7 @@ public class BarberController {
                     .message("Barber updated successfully")
                     .data(barbersResponseUpdate)
                     .build());
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -179,7 +178,7 @@ public class BarberController {
                     .statusCode(200)
                     .message("Barber deleted successfully")
                     .build());
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

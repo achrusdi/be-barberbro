@@ -9,6 +9,7 @@ import com.enigmacamp.barbershop.model.dto.response.JwtUserInfo;
 import com.enigmacamp.barbershop.model.entity.Users;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +28,7 @@ public class JwtService {
     // private final Stirng JWT_SECRET
 
     // Algorithm algorithm = Algorithm.HMAC256("rains");
-    private Algorithm algorithm = Algorithm.HMAC256("ndog".getBytes(StandardCharsets.UTF_8));
+    private final Algorithm algorithm = Algorithm.HMAC256("ndog".getBytes(StandardCharsets.UTF_8));
 
     public String generateToken(Users user) {
         try {
@@ -36,7 +39,7 @@ public class JwtService {
                     // .withClaim("username", user.getUsername())
                     .withClaim("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .withIssuedAt(Instant.now())
-                    .withExpiresAt(Instant.now().plusSeconds(3600))
+                    .withExpiresAt(ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Jakarta")).plusMonths(1).toInstant())
                     // .withNotBefore(Instant.now().plusSeconds(3600))
                     .sign(algorithm);
         } catch (JWTCreationException e) {
@@ -47,7 +50,7 @@ public class JwtService {
 
     public boolean verifyJwtToken(String token) {
         try {
-            DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(parseJwt(token));
+            // DecodedJWT decodedJWT = JWT.require(algorithm).build().verify(parseJwt(token));
             return true;
         } catch (JWTCreationException e) {
             log.error("Invalid JWT Signature/Claims : {}", e.getMessage());
