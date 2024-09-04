@@ -43,6 +43,9 @@ public class BarberResponse {
     private List<ServiceResponse> services;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<SocialMediaResponse> social_media;
+    @JsonProperty("distance_km")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double distanceKm;
     private Long createdAt;
     private Long updateAt;
 

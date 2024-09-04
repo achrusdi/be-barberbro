@@ -298,6 +298,7 @@ public class BarberServiceImpl implements BarberService {
             query.setParameter("longitude", longitude);
             query.setParameter("distance", distance);
 
+            @SuppressWarnings("unchecked")
             List<Object[]> results = query.getResultList();
 
             List<BarberResponse> barbersList = new ArrayList<>();
@@ -315,6 +316,7 @@ public class BarberServiceImpl implements BarberService {
                 BarberResponse response = barbers.toResponse();
                 response.setAverageRating(result[17] == null ? 0 : ((BigDecimal) result[17]).doubleValue());
                 response.setReviewCount((Long) result[18]);
+                response.setDistanceKm(result[16] == null ? 0 : (Double) result[16]);
                 barbersList.add(response);
 
             }
@@ -323,7 +325,6 @@ public class BarberServiceImpl implements BarberService {
 
             // return barbersRepository.findNearbyBarbers(radius, radius, radius);
         } catch (Exception e) {
-            // TODO: handle exception
             throw new RuntimeException(e);
         }
     }
