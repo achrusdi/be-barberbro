@@ -1,6 +1,7 @@
 package com.enigmacamp.barbershop.service.Impl;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.enigmacamp.barbershop.model.entity.Service;
@@ -27,8 +28,7 @@ public class ServiceServiceImpl implements ServiceService {
             }
 
             return serviceRepository.save(service);
-        } catch (Exception e) {
-            // TODO: handle exception
+        } catch (ResponseStatusException e) {
             throw new RuntimeException(e);
         }
     }
@@ -36,5 +36,48 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public Service getById(String id) {
         return serviceRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Service create(Service service) {
+        try {
+            return serviceRepository.save(service);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Service update(Service service) {
+        try {
+            if (service.getService_id() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID cannot be null");
+            }
+
+            if (service.getBarbershop_id() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Barbershop ID cannot be null");
+            }
+
+            if (serviceRepository.findById(service.getService_id()).isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found");
+            }
+
+            return serviceRepository.save(service);
+        } catch (ResponseStatusException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean delete(String id) {
+        try {
+            serviceRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

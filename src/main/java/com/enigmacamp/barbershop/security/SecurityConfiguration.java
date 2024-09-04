@@ -36,13 +36,22 @@ public class SecurityConfiguration {
                                 "/api/barbers/{id}", "/api/payments/{id}/update", "/api/customers")
                         .permitAll()
                         .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
-                        
-                        .requestMatchers(HttpMethod.PUT, "/api/barbers/operational-hour/current").hasAnyAuthority("STAFF")
-                        .requestMatchers(HttpMethod.POST, "/api/barbers/operational-hour/current").hasAnyAuthority("STAFF")
-                        .requestMatchers(HttpMethod.DELETE, "/api/barbers/operational-hour/current/{id}").hasAnyAuthority("STAFF")
-                        .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel", "/api/bookings/{id}/complete", "/api/barbers/current").hasAnyAuthority("STAFF")
 
-                        .requestMatchers("/api/payments/**", "/api/customers/current", "/api/reviews", "/api/barbers/nearby")
+                        .requestMatchers(HttpMethod.PUT, "/api/barbers/operational-hour/current",
+                                "/api/barbers/services/current", "/api/barbers/social-media/current")
+                        .hasAnyAuthority("STAFF")
+                        .requestMatchers(HttpMethod.POST, "/api/barbers/operational-hour/current",
+                                "/api/barbers/services/current", "/api/barbers/social-media/current")
+                        .hasAnyAuthority("STAFF")
+                        .requestMatchers(HttpMethod.DELETE, "/api/barbers/operational-hour/current/{id}",
+                                "/api/barbers/services/current/{serviceId}", "/api/barbers/social-media/current/{socialMediaId}")
+                        .hasAnyAuthority("STAFF")
+                        .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel",
+                                "/api/bookings/{id}/complete", "/api/barbers/current")
+                        .hasAnyAuthority("STAFF")
+
+                        .requestMatchers("/api/payments/**", "/api/customers/current", "/api/reviews",
+                                "/api/barbers/nearby")
                         .hasAnyAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT, "/api/customers/current").hasAnyAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/bookings").hasAnyAuthority("CUSTOMER")
