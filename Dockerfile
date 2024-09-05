@@ -23,8 +23,5 @@ WORKDIR /app
 # Salin hasil build dari tahap pertama
 COPY --from=build /app/target/*.jar app.jar
 
-# Salin keystore untuk HTTPS
-COPY src/main/resources/keystore.p12 keystore.p12
-
 # Jalankan aplikasi
-ENTRYPOINT ["java", "-jar", "/app/app.jar", "--server.ssl.key-store=/app/keystore.p12", "--server.ssl.key-store-password=barberbro", "--server.ssl.key-alias=my-ssl-cert"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
