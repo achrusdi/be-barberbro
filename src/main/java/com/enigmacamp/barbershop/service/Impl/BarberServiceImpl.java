@@ -398,6 +398,11 @@ public class BarberServiceImpl implements BarberService {
     public Barbers getBarberById(String id) {
         try {
             Barbers barbers = barbersRepository.findById(id).orElse(null);
+
+            if (barbers == null) {
+                return null;
+            }
+            
             if (barbers.getDeletedAt() != null) {
                 return null;
             }

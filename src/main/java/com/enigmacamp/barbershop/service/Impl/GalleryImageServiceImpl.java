@@ -76,7 +76,6 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                 if (!List.of("image/jpeg", "image/png", "image/jpg", "image/svg+xml")
                         .contains(image.getContentType()))
                     throw new ConstraintViolationException(ResponseMessage.ERROR_INVALID_CONTENT_TYPE, null);
-
                 Users user = jwtHelpers.getUser(srvrequest);
                 if (user == null) {
                     throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
@@ -94,8 +93,6 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                 String uniqueFilename = UUID.randomUUID().toString() + extension;
                 Path filePath = directoryPath.resolve(uniqueFilename);
                 Files.copy(image.getInputStream(), filePath);
-                // String baseUrl =
-                // ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
                 GalleryImage galleryImage = GalleryImage.builder()
                         .name(uniqueFilename)
@@ -145,7 +142,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
             if (!galleryImageRepository.existsById(id)) {
                 return false;
             }
-            
+
             galleryImageRepository.deleteById(id);
             return true;
         } catch (Exception e) {
@@ -163,13 +160,13 @@ public class GalleryImageServiceImpl implements GalleryImageService {
         try {
             Barbers barbers = barberService.getBarberById(id);
             if (barbers == null) {
-                return null;
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
             }
 
             List<GalleryImage> galleryImages = galleryImageRepository.findAllByBarbersId(barbers);
-            if (galleryImages == null) {
-                return null;
-            }
+            // if (galleryImages == null) {
+            //     return null;
+            // }
 
             List<GalleryImageResponse> responses = new ArrayList<>();
             for (GalleryImage image : galleryImages) {
@@ -185,7 +182,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
             }
 
             return responses;
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             throw new RuntimeException(e);
         }
     }
