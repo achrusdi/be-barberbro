@@ -15,7 +15,11 @@ public interface GalleryImageService {
 
     Resource getById(String id);
 
-    void deleteById(String id);
+    GalleryImage getByIdEntity(String id);
+
+    Boolean deleteById(String id);
 
     GalleryImage getByName(String name);
+
+    List<GalleryImageResponse> getByBarberId(String id);
 }

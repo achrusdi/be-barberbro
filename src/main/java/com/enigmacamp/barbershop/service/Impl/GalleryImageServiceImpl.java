@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,7 +23,6 @@ import com.enigmacamp.barbershop.model.dto.response.GalleryImageResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.GalleryImage;
 import com.enigmacamp.barbershop.model.entity.Users;
-import com.enigmacamp.barbershop.repository.BarbersRepository;
 import com.enigmacamp.barbershop.repository.GalleryImageRepository;
 import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.service.GalleryImageService;
@@ -104,7 +104,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                         .path(secondPath + "/" + uniqueFilename)
                         .createdAt(System.currentTimeMillis())
                         .updatedAt(System.currentTimeMillis())
-                        .barbers_id(barbers)
+                        .barbersId(barbers)
                         .build();
 
                 galleryImageRepository.saveAndFlush(galleryImage);
@@ -124,7 +124,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                         "Error saving file: " + e.getMessage());
             } catch (ConstraintViolationException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-            } catch (Exception e) {
+            } catch (ResponseStatusException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Unexpected error: " + e.getMessage());
             }
@@ -139,12 +139,64 @@ public class GalleryImageServiceImpl implements GalleryImageService {
     }
 
     @Override
-    public void deleteById(String id) {
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean deleteById(String id) {
+        try {
+            if (!galleryImageRepository.existsById(id)) {
+                return false;
+            }
+            
+            galleryImageRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public GalleryImage getByName(String name) {
         return null;
+    }
+
+    @Override
+    public List<GalleryImageResponse> getByBarberId(String id) {
+        try {
+            Barbers barbers = barberService.getBarberById(id);
+            if (barbers == null) {
+                return null;
+            }
+
+            List<GalleryImage> galleryImages = galleryImageRepository.findAllByBarbersId(barbers);
+            if (galleryImages == null) {
+                return null;
+            }
+
+            List<GalleryImageResponse> responses = new ArrayList<>();
+            for (GalleryImage image : galleryImages) {
+                GalleryImageResponse response = GalleryImageResponse.builder()
+                        .image_id(image.getImage_id())
+                        .name(image.getName())
+                        .contentType(image.getContentType())
+                        .size(image.getSize())
+                        .path(image.getPath())
+                        .barbers_id(barbers.getId())
+                        .build();
+                responses.add(response);
+            }
+
+            return responses;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public GalleryImage getByIdEntity(String id) {
+        try {
+            return galleryImageRepository.findById(id).get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

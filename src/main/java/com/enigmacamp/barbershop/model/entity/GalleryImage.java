@@ -28,7 +28,7 @@ public class GalleryImage {
 
     @ManyToOne
     @JoinColumn(name = "barbers_id")
-    private Barbers barbers_id;
+    private Barbers barbersId;
 
     @Column(name = "name", nullable = false)
     private String name;

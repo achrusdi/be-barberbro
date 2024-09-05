@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v2/api-docs/**").permitAll()
                         .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers",
-                                "/api/barbers/{id}", "/api/payments/{id}/update", "/api/customers")
+                                "/api/barbers/{id}", "/api/payments/{id}/update", "/api/customers", "/api/barbers/{id}/gallery-images")
                         .permitAll()
                         .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
 
@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                                 "/api/barbers/services/current", "/api/barbers/social-media/current")
                         .hasAnyAuthority("STAFF")
                         .requestMatchers(HttpMethod.DELETE, "/api/barbers/operational-hour/current/{id}",
-                                "/api/barbers/services/current/{serviceId}", "/api/barbers/social-media/current/{socialMediaId}")
+                                "/api/barbers/services/current/{serviceId}", "/api/barbers/social-media/current/{socialMediaId}", "/api/gallery-image/{id}")
                         .hasAnyAuthority("STAFF")
                         .requestMatchers("/api/barber/**", "/api/bookings/{id}", "/api/bookings/{id}/cancel",
                                 "/api/bookings/{id}/complete", "/api/barbers/current")

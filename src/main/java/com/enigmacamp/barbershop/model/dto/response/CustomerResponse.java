@@ -1,7 +1,5 @@
 package com.enigmacamp.barbershop.model.dto.response;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
