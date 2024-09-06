@@ -148,7 +148,6 @@ public class PaymentServiceImpl implements PaymentService {
 
             return payment;
         } catch (Exception e) {
-            // TODO: handle exception
             throw new RuntimeException(e);
         }
     }

@@ -22,4 +22,8 @@ public interface BookingService {
     Booking completed(Barbers barber, String bookingId);
 
     List<Booking> getAll();
+
+    Booking getMidtransUrl(Booking booking);
+
+    Booking updateBookingStatus(Booking booking);
 }

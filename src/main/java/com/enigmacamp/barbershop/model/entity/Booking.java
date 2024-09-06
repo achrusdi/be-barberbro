@@ -56,6 +56,9 @@ public class Booking {
     @Column(name = "total_price", nullable = true)
     private Double totalPrice;
 
+    @Column(name = "midtrans_payment_url", nullable = true)
+    private String midtransPaymentUrl;
+
     @Column(name = "created_at", nullable = false)
     private Long createdAt;
 
@@ -74,6 +77,7 @@ public class Booking {
                 .bookingDate(bookingDate)
                 .bookingTime(bookingTime.toString())
                 .status(status)
+                .midtransPaymentUrl(midtransPaymentUrl)
                 .totalPrice(totalPrice)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)

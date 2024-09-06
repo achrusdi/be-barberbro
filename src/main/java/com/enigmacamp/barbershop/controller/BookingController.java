@@ -198,4 +198,27 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @GetMapping("/bookings/{id}/update")
+    public ResponseEntity<CommonResponse<BookingResponse>> updateBooking(@PathVariable String id) {
+
+        Booking booking = bookingService.getById(id);
+
+        if (booking == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
+        }
+
+        booking = bookingService.updateBookingStatus(booking);
+
+        if (booking == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update booking");
+        }
+
+        return ResponseEntity.ok(CommonResponse.<BookingResponse>builder()
+                .statusCode(200)
+                .message("Booking updated successfully")
+                .data(booking.toResponse())
+                .build());
+    }
+
 }

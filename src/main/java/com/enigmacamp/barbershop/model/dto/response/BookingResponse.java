@@ -2,12 +2,15 @@ package com.enigmacamp.barbershop.model.dto.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class BookingResponse {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String booking_id;
     
     private CustomerResponse customer;
@@ -21,6 +24,8 @@ public class BookingResponse {
     private String bookingTime;
 
     private String status;
+
+    private String midtransPaymentUrl;
 
     private Double totalPrice;
 
