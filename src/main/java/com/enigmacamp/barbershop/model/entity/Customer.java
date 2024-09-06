@@ -42,6 +42,8 @@ public class Customer {
     @Column(name = "phone", nullable = true)
     private String phone;
 
+    private float balance;
+
     @Column(name = "address", nullable = true)
     private String address;
 

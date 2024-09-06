@@ -17,4 +17,7 @@ public class OperationalHoursRequest {
     private String opening_time;
     @JsonProperty("closing_time")
     private String closing_time;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("limit_per_session")
+    private Integer limitPerSession;
 }

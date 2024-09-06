@@ -1,5 +1,6 @@
 package com.enigmacamp.barbershop.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.enigmacamp.barbershop.model.entity.Barbers;
@@ -26,4 +27,6 @@ public interface BookingService {
     Booking getMidtransUrl(Booking booking);
 
     Booking updateBookingStatus(Booking booking);
+
+    List<Booking> getAllByBarberAndDate(Barbers barber, Long date);
 }

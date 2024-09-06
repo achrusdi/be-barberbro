@@ -70,7 +70,7 @@ public class BarberServiceImpl implements BarberService {
     @Override
     public Barbers getByEmail(String email) {
         Barbers barbers = barbersRepository.findByEmail(email);
-        if (barbers.getDeletedAt() == null) {
+        if (barbers != null && barbers.getDeletedAt() == null) {
             return barbers;
         }
 
@@ -159,7 +159,7 @@ public class BarberServiceImpl implements BarberService {
             @SuppressWarnings("deprecation")
             Barbers barbers = barbersRepository.getById((String) result[0]);
 
-            if (barbers.getDeletedAt() != null) {
+            if (barbers != null && barbers.getDeletedAt() != null) {
                 return null;
             }
 
@@ -213,7 +213,7 @@ public class BarberServiceImpl implements BarberService {
                 return null;
             }
 
-            if (barbers.getDeletedAt() != null) {
+            if (barbers != null && barbers.getDeletedAt() != null) {
                 return null;
             }
 
@@ -309,7 +309,7 @@ public class BarberServiceImpl implements BarberService {
                     continue;
                 }
 
-                if (barbers.getDeletedAt() != null) {
+                if (barbers != null && barbers.getDeletedAt() != null) {
                     continue;
                 }
 
@@ -403,7 +403,7 @@ public class BarberServiceImpl implements BarberService {
                 return null;
             }
             
-            if (barbers.getDeletedAt() != null) {
+            if (barbers != null && barbers.getDeletedAt() != null) {
                 return null;
             }
 

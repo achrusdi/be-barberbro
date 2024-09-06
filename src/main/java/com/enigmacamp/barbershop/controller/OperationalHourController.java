@@ -60,6 +60,8 @@ public class OperationalHourController {
             operationalHour.setClosing_time(LocalTime.parse(request.getClosing_time()));
         if (request.getDay() != null)
             operationalHour.setDay(request.getDay().name());
+        if (request.getLimitPerSession() != null)
+            operationalHour.setLimitPerSession(request.getLimitPerSession());
 
         operationalHour = operationalHourService.update(operationalHour);
 
@@ -89,6 +91,7 @@ public class OperationalHourController {
                 .day(request.getDay().name())
                 .opening_time(LocalTime.parse(request.getOpening_time()))
                 .closing_time(LocalTime.parse(request.getClosing_time()))
+                .limitPerSession(request.getLimitPerSession())
                 .build();
 
         operationalHour = operationalHourService.create(srvrequest, operationalHour);

@@ -105,6 +105,7 @@ public class AuthServiceImpl implements AuthService {
                                         .isMale(null)
                                         .phone(null)
                                         .address(null)
+                                        .balance(0)
                                         .build();
 
                         customerService.create(customer, srvrequest);
@@ -192,6 +193,7 @@ public class AuthServiceImpl implements AuthService {
                                                                         .parse(operationalHour.getOpening_time()))
                                                         .closing_time(LocalTime
                                                                         .parse(operationalHour.getClosing_time()))
+                                                        .limitPerSession(operationalHour.getLimitPerSession() == null ? 1 : operationalHour.getLimitPerSession())
                                                         .barbershop_id(barbers.toEntity())
                                                         .build();
 

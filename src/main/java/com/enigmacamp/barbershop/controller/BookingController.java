@@ -1,8 +1,17 @@
 package com.enigmacamp.barbershop.controller;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +32,7 @@ import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Booking;
 import com.enigmacamp.barbershop.model.entity.Customer;
+import com.enigmacamp.barbershop.model.entity.OperationalHour;
 import com.enigmacamp.barbershop.model.entity.Service;
 import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.service.BarberService;
@@ -32,6 +42,7 @@ import com.enigmacamp.barbershop.service.ServiceService;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -44,9 +55,16 @@ public class BookingController {
     private final ServiceService serviceService;
     private final JwtHelpers jwtHelpers;
 
+    private static final Pattern TIME_PATTERN = Pattern.compile("^([01]\\d|2[0-3]):([0]\\d)$");
+
     @PostMapping("/bookings")
-    public ResponseEntity<CommonResponse<BookingResponse>> createBooking(@RequestBody BookingRequest booking,
+    public ResponseEntity<CommonResponse<BookingResponse>> createBooking(@Valid @RequestBody BookingRequest booking,
             HttpServletRequest srvrequest) {
+
+        if (!isTimestampAfterToday(booking.getBookingDate())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking date must be in the future");
+        }
+
         Users user = jwtHelpers.getUser(srvrequest);
 
         if (user == null) {
@@ -59,8 +77,53 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
         }
 
+        if (booking.getServices() == null || booking.getServices().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Services cannot be empty");
+        }
+
+        LocalDateTime dateTime = Instant.ofEpochMilli(booking.getBookingDate())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        String dayBooking = dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toUpperCase();
+
+        if (!isValidTimeFormat(booking.getBookingTime())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid time format, must be in HH:mm format");
+        }
+
+        Barbers barbers = barberService.getBarberById(booking.getBarber_id());
+
+        if (barbers == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
+        }
+
+        OperationalHour oh = barbers.getOperationalHours().stream()
+                .filter(o -> o.getDay().equals(dayBooking)).findFirst().orElse(null);
+
+        if (oh == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Barber is not available on this day");
+        }
+
+        if (!isTimeInRange(booking.getBookingTime(), oh.getOpening_time().toString(),
+                oh.getClosing_time().toString())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Barber is not available at this time");
+        }
+
+        List<Booking> bookings = bookingService.getAllByBarberAndDate(barbers, booking.getBookingDate());
+        List<Booking> filteredBookings = new ArrayList<>();
+
+        if (bookings != null && !bookings.isEmpty()) {
+            filteredBookings = bookings.stream()
+                    .filter(b -> booking.getBookingTime().equals(b.getBookingTime().toString())).toList();
+        }
+
+        if (filteredBookings != null && !filteredBookings.isEmpty()
+                && filteredBookings.size() >= oh.getLimitPerSession()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Barber session is not available at this time");
+        }
+
         Customer customer = customerService.getByUserId(user);
-        
+
         if (customer == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     ResponseMessage.ERROR_NOT_FOUND);
@@ -219,6 +282,31 @@ public class BookingController {
                 .message("Booking updated successfully")
                 .data(booking.toResponse())
                 .build());
+    }
+
+    private Boolean isValidTimeFormat(String time) {
+        return TIME_PATTERN.matcher(time).matches();
+    }
+
+    private Boolean isTimeInRange(String time, String startTime, String endTime) {
+        try {
+            LocalTime timeToCheck = LocalTime.parse(time);
+            LocalTime start = LocalTime.parse(startTime);
+            LocalTime end = LocalTime.parse(endTime);
+
+            return !timeToCheck.isBefore(start) && !timeToCheck.isAfter(end);
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    private Boolean isTimestampAfterToday(Long timestamp) {
+        LocalDate today = LocalDate.now();
+        ZonedDateTime startOfToday = today.atStartOfDay(ZoneId.systemDefault());
+        long startOfTodayTimestamp = startOfToday.toInstant().toEpochMilli();
+
+        return timestamp > startOfTodayTimestamp;
     }
 
 }

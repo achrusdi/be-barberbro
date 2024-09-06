@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 import com.enigmacamp.barbershop.model.dto.response.OperationalHourResponse;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +35,10 @@ public class OperationalHour {
 
     @Pattern(regexp = "^(SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY)$", message = "day_of_week must be only SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY")
     private String day;
+
+    @Column(name = "limit_per_session", nullable = false)
+    private Integer limitPerSession;
+
     private LocalTime opening_time;
     private LocalTime closing_time;
 
@@ -44,6 +49,7 @@ public class OperationalHour {
                 .day(day)
                 .opening_time(opening_time.toString())
                 .closing_time(closing_time.toString())
+                .limitPerSession(limitPerSession)
                 .build();
     }
 }

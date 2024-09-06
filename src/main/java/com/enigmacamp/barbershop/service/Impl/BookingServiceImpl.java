@@ -1,9 +1,14 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -278,11 +283,8 @@ public class BookingServiceImpl implements BookingService {
                     .toEntity(new ParameterizedTypeReference<Map<String, String>>() {
                     });
 
-            System.out.println("=========================================");
-            System.out.println("response body: " + response.getBody() + " status code: " + response.getStatusCode());
-            System.out.println("=========================================");
-
-            if (response.getStatusCode().equals(HttpStatus.OK) && !response.getBody().get("status_code").equals("404")) {
+            if (response.getStatusCode().equals(HttpStatus.OK)
+                    && !response.getBody().get("status_code").equals("404")) {
                 if (response.getBody().get("transaction_status").equals("settlement")) {
                     booking.setStatus(BookingStatus.Confirmed.name());
                     // payment.setPaymentStatus(PaymentStatus.COMPLETED.name());
@@ -300,5 +302,38 @@ public class BookingServiceImpl implements BookingService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<Booking> getAllByBarberAndDate(Barbers barber, Long date) {
+        try {
+
+            LocalDate localDate = getLocalDateFromEpochMillis(date);
+            Long start = getStartOfDayEpochMillis(localDate);
+            Long end = getEndOfDayEpochMillis(localDate);
+
+            return bookingRepository.findByBarberIdAndBookingDateRange(barber, start, end);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private LocalDate getLocalDateFromEpochMillis(Long timestampNow) {
+        Instant instant = Instant.ofEpochMilli(timestampNow);
+          ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+          
+          return zdt.toLocalDate();
+    }
+
+    public Long getStartOfDayEpochMillis(LocalDate date) {
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    public Long getEndOfDayEpochMillis(LocalDate date) {
+        return date.atTime(23, 59, 59, 999_999_999)
+                   .atZone(ZoneId.systemDefault())
+                   .toInstant()
+                   .toEpochMilli();
     }
 }
