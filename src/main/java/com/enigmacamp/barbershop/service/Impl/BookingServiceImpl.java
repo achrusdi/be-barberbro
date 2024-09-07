@@ -349,24 +349,24 @@ public class BookingServiceImpl implements BookingService {
             Booking booking = bookingRepository.findById(request.getOrderId()).orElse(null);
 
             if (booking == null) {
-                return false;
-            }
-
-            if (booking == null) {
+                System.out.println("Booking not found");
                 return false;
             }
 
             if (!request.getStatusCode().equals("200")) {
+                System.out.println("Request status code not 200");
                 return false;
             }
 
             if (!request.getGrossAmount().equals(booking.getTotalPrice())) {
+                System.out.println("Request gross amount not equal to booking total price");
                 return false;
             }
 
             Barbers barber = booking.getBarberId();
 
             if (barber == null) {
+                System.out.println("Barber not found");
                 return false;
             }
 
@@ -393,9 +393,11 @@ public class BookingServiceImpl implements BookingService {
 
                 bookingRepository.saveAndFlush(booking);
 
+                System.out.println("Booking updated");
                 return true;
             }
 
+            System.out.println("Booking not updated");
             return false;
 
         } catch (Exception e) {
