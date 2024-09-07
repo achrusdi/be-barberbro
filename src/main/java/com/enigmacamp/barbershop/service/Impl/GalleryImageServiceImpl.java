@@ -88,9 +88,17 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                 }
 
                 String originalFilename = image.getOriginalFilename();
-                String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+                String contentType = image.getContentType();
+                System.out.println("=========================================");
+                System.out.println("originalFilename: " + originalFilename);
+                System.out.println(contentType);
+                System.out.println(contentType.substring(contentType.lastIndexOf('/') + 1));
+                System.out.println("=========================================");
+                // String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+                String extension = contentType.substring(contentType.lastIndexOf('/') + 1);
+                
 
-                String uniqueFilename = UUID.randomUUID().toString() + extension;
+                String uniqueFilename = UUID.randomUUID().toString() + "." + extension;
                 Path filePath = directoryPath.resolve(uniqueFilename);
                 Files.copy(image.getInputStream(), filePath);
 
@@ -120,7 +128,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Error saving file: " + e.getMessage());
             } catch (ConstraintViolationException e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ndog " + e.getMessage());
             } catch (ResponseStatusException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Unexpected error: " + e.getMessage());
