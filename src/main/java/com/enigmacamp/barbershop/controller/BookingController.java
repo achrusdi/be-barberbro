@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.ResponseMessage;
 import com.enigmacamp.barbershop.model.dto.request.BookingRequest;
+import com.enigmacamp.barbershop.model.dto.request.MidtransWebhookRequest;
 import com.enigmacamp.barbershop.model.dto.response.BookingResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
@@ -260,6 +260,11 @@ public class BookingController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @PostMapping("bookings/webhook")
+    public void webhook(@RequestBody MidtransWebhookRequest request) {
+        bookingService.bookingWebhook(request);
     }
 
     @GetMapping("/bookings/{id}/update")

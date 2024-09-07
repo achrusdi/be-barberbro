@@ -1,8 +1,11 @@
 package com.enigmacamp.barbershop.service.Impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Review;
 import com.enigmacamp.barbershop.repository.ReviewRepository;
 import com.enigmacamp.barbershop.service.ReviewService;
@@ -23,5 +26,10 @@ public class ReviewServiceImpl implements ReviewService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<Review> getByBarber(Barbers barber) {
+        return reviewRepository.findByBarbershopId(barber);
     }
 }

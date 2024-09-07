@@ -1,8 +1,8 @@
 package com.enigmacamp.barbershop.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
+import com.enigmacamp.barbershop.model.dto.request.MidtransWebhookRequest;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Booking;
 import com.enigmacamp.barbershop.model.entity.Customer;
@@ -29,4 +29,6 @@ public interface BookingService {
     Booking updateBookingStatus(Booking booking);
 
     List<Booking> getAllByBarberAndDate(Barbers barber, Long date);
+
+    Boolean bookingWebhook(MidtransWebhookRequest request);
 }

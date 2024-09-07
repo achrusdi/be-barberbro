@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClient;
 import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.PaymentStatus;
 import com.enigmacamp.barbershop.model.dto.request.MidtransRequest;
+import com.enigmacamp.barbershop.model.dto.request.MidtransWebhookRequest;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Booking;
 import com.enigmacamp.barbershop.model.entity.Customer;
@@ -321,9 +322,9 @@ public class BookingServiceImpl implements BookingService {
 
     private LocalDate getLocalDateFromEpochMillis(Long timestampNow) {
         Instant instant = Instant.ofEpochMilli(timestampNow);
-          ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
-          
-          return zdt.toLocalDate();
+        ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+
+        return zdt.toLocalDate();
     }
 
     public Long getStartOfDayEpochMillis(LocalDate date) {
@@ -332,8 +333,73 @@ public class BookingServiceImpl implements BookingService {
 
     public Long getEndOfDayEpochMillis(LocalDate date) {
         return date.atTime(23, 59, 59, 999_999_999)
-                   .atZone(ZoneId.systemDefault())
-                   .toInstant()
-                   .toEpochMilli();
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean bookingWebhook(MidtransWebhookRequest request) {
+        System.out.println("=========================================");
+        System.out.println("Request: " + request);
+        System.out.println("=========================================");
+
+        try {
+            Booking booking = bookingRepository.findById(request.getOrderId()).orElse(null);
+
+            if (booking == null) {
+                return false;
+            }
+
+            if (booking == null) {
+                return false;
+            }
+
+            if (!request.getStatusCode().equals("200")) {
+                return false;
+            }
+
+            if (!request.getGrossAmount().equals(booking.getTotalPrice())) {
+                return false;
+            }
+
+            Barbers barber = booking.getBarberId();
+
+            if (barber == null) {
+                return false;
+            }
+
+            String base64EncodedKey = Base64.getEncoder().encodeToString((MIDTRANS_KEY + ":").getBytes());
+
+            ResponseEntity<Map<String, String>> response = restClient.get()
+                    .uri("https://api.sandbox.midtrans.com/v2/" + booking.getBookingId() + "/status")
+                    .header(HttpHeaders.AUTHORIZATION, "Basic " + base64EncodedKey)
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<Map<String, String>>() {
+                    });
+
+            if (response.getStatusCode().equals(HttpStatus.OK)
+                    && !response.getBody().get("status_code").equals("404")) {
+                if (response.getBody().get("transaction_status").equals("settlement")) {
+                    booking.setStatus(BookingStatus.Confirmed.name());
+                    // payment.setPaymentStatus(PaymentStatus.COMPLETED.name());
+                    booking.setStatus(BookingStatus.Settlement.name());
+                    barber.setBalance((float) (booking.getTotalPrice() + barber.getBalance()));
+                    barberService.update(barber);
+                } else {
+                    booking.setStatus(PaymentStatus.PENDING.name());
+                }
+
+                bookingRepository.saveAndFlush(booking);
+
+                return true;
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/v2/api-docs/**").permitAll()
                         .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers",
-                                "/api/barbers/{id}", "/api/bookings/{id}/update", "/api/customers", "/api/barbers/{id}/gallery-images")
+                                "/api/barbers/{id}", "/api/bookings/{id}/update", "/api/customers", "/api/barbers/{id}/gallery-images", "/api/bookings/webhook", "/api/reviews/{id}")
                         .permitAll()
                         .requestMatchers("/api/bookings/current").hasAnyAuthority("CUSTOMER", "STAFF")
 
