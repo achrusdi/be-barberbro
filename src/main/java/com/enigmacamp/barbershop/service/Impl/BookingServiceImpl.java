@@ -64,13 +64,6 @@ public class BookingServiceImpl implements BookingService {
 
             Double amount = servicesMidtrans.stream().mapToDouble(s -> s.getPrice()).sum();
 
-            // List<com.enigmacamp.barbershop.model.entity.Service> services =
-            // booking.getServices();
-
-            // Double totalPrice =
-            // services.stream().mapToDouble(com.enigmacamp.barbershop.model.entity.Service::getPrice)
-            // .sum();
-
             booking.setTotalPrice(amount);
 
             booking.setStatus(BookingStatus.Pending.name());
@@ -116,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
 
             return bookingRepository.save(booking);
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
     }

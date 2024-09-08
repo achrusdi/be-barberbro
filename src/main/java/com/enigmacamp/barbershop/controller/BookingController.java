@@ -133,6 +133,9 @@ public class BookingController {
 
         for (String serviceId : booking.getServices()) {
             Service service = serviceService.getById(serviceId);
+            if (service == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found");
+            }
             services.add(service);
         }
 
@@ -149,6 +152,10 @@ public class BookingController {
                 .build();
 
         bookingToBeCreated = bookingService.create(bookingToBeCreated);
+
+        System.out.println("=========================================");
+        System.out.println("Booking created: " + bookingToBeCreated);
+        System.out.println("=========================================");
 
         if (bookingToBeCreated == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
