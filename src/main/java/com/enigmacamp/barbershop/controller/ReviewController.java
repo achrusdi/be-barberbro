@@ -1,5 +1,6 @@
 package com.enigmacamp.barbershop.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -98,7 +99,7 @@ public class ReviewController {
                 .build());
     }
 
-    @GetMapping("/reviews/{id}")
+    @GetMapping("/reviews/{barberId}")
     public ResponseEntity<CommonResponse<List<ReviewResponse>>> getReviewById(@PathVariable String id) {
 
         Barbers barber = barberService.getBarberById(id);
@@ -115,39 +116,33 @@ public class ReviewController {
                 .data(reviews.stream().map(Review::toResponse).toList())
                 .build());
     }
-    // @PostMapping("/reviews")
-    // public ResponseEntity<CommonResponse<ReviewResponse>>
-    // createReview(@RequestBody ReviewRequest request,
-    // HttpServletRequest srvrequest) {
+    
+    @GetMapping("/reviews/current")
+    public ResponseEntity<CommonResponse<List<ReviewResponse>>> getReview(HttpServletRequest srvrequest) {
 
-    // // Users user = jwtHelpers.getUser(srvrequest);
+        Users user = jwtHelpers.getUser(srvrequest);
 
-    // // if (user == null) {
-    // // throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-    // "Unauthorized");
-    // // }
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
 
-    // // Customer customer = customerService.getByUserId(user);
+        Customer customer = customerService.getByUserId(user);
+        Barbers barber = barberService.getByUserId(user);
 
-    // // Review review = Review.builder()
-    // // .customerId(customer)
-    // // .rating(request.getRating())
-    // // .comment(request.getComment())
-    // // .build();
+        List<Review> reviews = new ArrayList<>();
 
-    // // review = reviewService.create(review);
+        if (customer != null) {
+            reviews = reviewService.getByCustomer(customer);
+        }
 
-    // // if (review == null) {
-    // // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-    // "Failed to update review");
-    // // }
+        if (barber != null) {
+            reviews = reviewService.getByBarber(barber);
+        }
 
-    // // return ResponseEntity.ok(CommonResponse.<ReviewResponse>builder()
-    // // .statusCode(200)
-    // // .message("Review updated")
-    // // .data(review.toResponse())
-    // // .build());
-
-    // return null;
-    // }
+        return ResponseEntity.ok(CommonResponse.<List<ReviewResponse>>builder()
+                .statusCode(200)
+                .message("List of review")
+                .data(reviews.stream().map(Review::toResponse).toList())
+                .build());
+    }
 }
