@@ -2,14 +2,17 @@ package com.enigmacamp.barbershop.service.Impl;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +27,11 @@ import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.PaymentStatus;
 import com.enigmacamp.barbershop.model.dto.request.MidtransRequest;
 import com.enigmacamp.barbershop.model.dto.request.MidtransWebhookRequest;
+import com.enigmacamp.barbershop.model.dto.response.BookingAvailableResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.model.entity.Booking;
 import com.enigmacamp.barbershop.model.entity.Customer;
+import com.enigmacamp.barbershop.model.entity.OperationalHour;
 import com.enigmacamp.barbershop.repository.BookingRepository;
 import com.enigmacamp.barbershop.service.BarberService;
 import com.enigmacamp.barbershop.service.BookingService;
@@ -49,6 +54,7 @@ public class BookingServiceImpl implements BookingService {
         this.MIDTRANS_KEY = secretKey;
     }
 
+    @SuppressWarnings("null")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Booking create(Booking booking) {
@@ -260,6 +266,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Booking updateBookingStatus(Booking booking) {
@@ -333,6 +340,7 @@ public class BookingServiceImpl implements BookingService {
                 .toEpochMilli();
     }
 
+    @SuppressWarnings("null")
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean bookingWebhook(MidtransWebhookRequest request) {
@@ -398,5 +406,89 @@ public class BookingServiceImpl implements BookingService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public BookingAvailableResponse getAvailable(Barbers barber, Long date) {
+
+        LocalDate localDate = getLocalDateFromEpochMillis(date);
+        Long start = getStartOfDayEpochMillis(localDate);
+        Long end = getEndOfDayEpochMillis(localDate);
+
+        LocalDateTime dateTime = Instant.ofEpochMilli(date)
+                .atZone(ZoneId.of("Asia/Jakarta"))
+                .toLocalDateTime();
+
+        // DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
+
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEEE");
+        String dayName = dateTime.format(dayFormatter).toUpperCase();
+
+        OperationalHour operationalHour = barber.getOperationalHours().stream()
+                .filter(oh -> oh.getDay().equals(dayName))
+                .findFirst()
+                .orElse(null);
+
+        if (operationalHour == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Barber is not available on this day");
+        }
+
+        List<Booking> bookings = bookingRepository.findByBarberIdAndBookingDateRange(barber, start, end);
+
+        if (bookings.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+
+        bookings.forEach(booking -> {
+            System.out.println("Booking id: " + booking.getBookingId());
+            System.out.println("Barber id: " + booking.getBarberId().getId());
+            System.out.println("Booking date: " + booking.getBookingDate());
+            System.out.println("Booking status: " + booking.getStatus());
+            System.out.println("Booking time: " + booking.getBookingTime());
+        });
+
+        // All time
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        LocalTime openingTime = LocalTime.parse(operationalHour.getOpening_time().toString(), timeFormatter);
+        LocalTime closingTime = LocalTime.parse(operationalHour.getClosing_time().toString(), timeFormatter);
+
+        if (openingTime.getMinute() != 0) {
+            openingTime = openingTime.plusHours(1).withMinute(0);
+        }
+
+        if (closingTime.getMinute() != 0) {
+            closingTime = closingTime.withMinute(0);
+        }
+
+        List<String> timeRange = new ArrayList<>();
+
+        LocalTime currentTime = openingTime;
+        while (!currentTime.isAfter(closingTime)) {
+            timeRange.add(currentTime.format(timeFormatter));
+            currentTime = currentTime.plusHours(1);
+        }
+
+        BookingAvailableResponse.builder()
+                .allTime(timeRange)
+                .build();
+
+        List<String> availableTime = new ArrayList<>();
+
+        for (String time : timeRange) {
+
+            List<Booking> filteredBookings = bookings.stream().filter(b -> b.getBookingTime().toString().equals(time)).toList();
+            
+            if (filteredBookings.size() >= operationalHour.getLimitPerSession()) {
+                continue;
+            }
+
+            availableTime.add(time);
+        }
+
+        return BookingAvailableResponse.builder()
+                .allTime(timeRange)
+                .availableTime(availableTime)
+                .build();
     }
 }

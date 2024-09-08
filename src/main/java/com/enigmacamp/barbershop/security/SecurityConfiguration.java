@@ -35,7 +35,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/login", "/api/customer/register", "/api/barber/register", "/api/barbers",
                                 "/api/barbers/{id}", "/api/bookings/{id}/update", "/api/customers", "/api/barbers/{id}/gallery-images", "/api/bookings/webhook", "/api/reviews/{barberId}")
                         .permitAll()
-                        .requestMatchers("/api/bookings/current", "/api/reviews/current").hasAnyAuthority("CUSTOMER", "STAFF")
+                        .requestMatchers("/api/bookings/current", "/api/reviews/current", "/bookings/{barberId}/{dateMillis}").hasAnyAuthority("CUSTOMER", "STAFF")
 
                         .requestMatchers(HttpMethod.PUT, "/api/barbers/operational-hour/current",
                                 "/api/barbers/services/current", "/api/barbers/social-media/current")

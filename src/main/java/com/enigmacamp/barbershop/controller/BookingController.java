@@ -31,6 +31,7 @@ import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.ResponseMessage;
 import com.enigmacamp.barbershop.model.dto.request.BookingRequest;
 import com.enigmacamp.barbershop.model.dto.request.MidtransWebhookRequest;
+import com.enigmacamp.barbershop.model.dto.response.BookingAvailableResponse;
 import com.enigmacamp.barbershop.model.dto.response.BookingResponse;
 import com.enigmacamp.barbershop.model.dto.response.CommonResponse;
 import com.enigmacamp.barbershop.model.entity.Barbers;
@@ -367,4 +368,33 @@ public class BookingController {
         }
     }
 
+    @GetMapping("/bookings/{barberId}/{dateMillis}")
+    public ResponseEntity<CommonResponse<BookingAvailableResponse>> getBookingByDate(@PathVariable Long dateMillis, @PathVariable String barberId) {
+
+        if (dateMillis == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date");
+        }
+
+        if (barberId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid barber id");
+        }
+
+        Barbers barber = barberService.getBarberById(barberId);
+
+        if (barber == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Barber not found");
+        }
+
+        BookingAvailableResponse bookings = bookingService.getAvailable(barber, dateMillis);
+
+        if (bookings == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+        }
+        
+        return ResponseEntity.ok(CommonResponse.<BookingAvailableResponse>builder()
+                .statusCode(200)
+                .message("List of booking")
+                .data(bookings)
+                .build());
+    }
 }

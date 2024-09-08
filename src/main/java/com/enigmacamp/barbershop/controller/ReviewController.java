@@ -100,9 +100,9 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews/{barberId}")
-    public ResponseEntity<CommonResponse<List<ReviewResponse>>> getReviewById(@PathVariable String id) {
+    public ResponseEntity<CommonResponse<List<ReviewResponse>>> getReviewById(@PathVariable String barberId) {
 
-        Barbers barber = barberService.getBarberById(id);
+        Barbers barber = barberService.getBarberById(barberId);
         
         List<Review> reviews = reviewService.getByBarber(barber);
 
