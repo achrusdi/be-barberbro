@@ -93,6 +93,7 @@ public class BookingServiceImpl implements BookingService {
                             .phone(customer.getPhone())
                             .build())
                     .itemDetails(servicesMidtrans)
+                    .enabledPayments(List.of("gopay"))
                     .build();
 
             ResponseEntity<Map<String, String>> response = restClient.post()
@@ -107,9 +108,12 @@ public class BookingServiceImpl implements BookingService {
                 booking.setMidtransPaymentUrl(response.getBody().get("redirect_url"));
             }
 
-            return bookingRepository.save(booking);
+            return bookingRepository.saveAndFlush(booking);
 
         } catch (RuntimeException e) {
+            System.out.println("=========================================");
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("=========================================");
             throw new RuntimeException(e);
         }
     }

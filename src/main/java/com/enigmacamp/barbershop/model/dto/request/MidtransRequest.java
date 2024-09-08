@@ -23,6 +23,9 @@ public class MidtransRequest {
     @JsonProperty("item_details")
     private List<ItemDetails> itemDetails;
 
+    @JsonProperty("enabled_payments")
+    private List<String> enabledPayments;
+
     @Data
     @Builder
     public static class TransactionDetails {
