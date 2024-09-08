@@ -153,10 +153,6 @@ public class BookingController {
 
         bookingToBeCreated = bookingService.create(bookingToBeCreated);
 
-        System.out.println("=========================================");
-        System.out.println("Booking created: " + bookingToBeCreated);
-        System.out.println("=========================================");
-
         if (bookingToBeCreated == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
         }
