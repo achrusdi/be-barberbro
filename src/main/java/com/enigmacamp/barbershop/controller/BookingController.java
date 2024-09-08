@@ -1,12 +1,16 @@
 package com.enigmacamp.barbershop.controller;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +67,39 @@ public class BookingController {
 
         if (!isTimestampAfterToday(booking.getBookingDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking date must be in the future");
+        }
+
+        ZoneId indonesiaZoneId = ZoneId.of("Asia/Jakarta");
+
+        Long currentDateMillis = getEpochMillisFromDate(LocalDate.now(indonesiaZoneId).toString(), indonesiaZoneId);
+
+        // Dapatkan waktu sekarang di zona waktu Indonesia
+        LocalTime currentTime = LocalTime.now(indonesiaZoneId);
+
+        if (booking.getBookingDate() < currentDateMillis) {
+            System.out.println("Booking date is in the past.");
+        } else if (booking.getBookingDate().equals(currentDateMillis)) {
+            // Jika tanggal sama, cek apakah bookingTime kurang dari 1 jam dari waktu saat ini
+            LocalTime bookingLocalTime = LocalTime.parse(booking.getBookingTime());
+
+            // Hitung selisih waktu antara bookingLocalTime dan currentTime
+            Duration durationBetween = Duration.between(currentTime, bookingLocalTime);
+
+            if (currentTime.isAfter(bookingLocalTime)) {
+                System.out.println("Current time is after the booking time.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking time must be in the future");
+            } else if (durationBetween.toMinutes() <= 60) {
+                System.out.println("Current time is within 1 hour before the booking time.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking time must be more than 1 hour after the current time");
+            } else {
+                // throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking time must be more than 1 hour after the current time");
+                System.out.println("Current time is more than 1 hour before the booking time.");
+            }
+
+        } else {
+            // Jika bookingDate lebih dari hari ini, hitung selisih hari
+            long daysBetween = ChronoUnit.DAYS.between(Instant.ofEpochMilli(currentDateMillis), Instant.ofEpochMilli(booking.getBookingDate()));
+            System.out.println("Booking is in the future. Days until booking: " + daysBetween);
         }
 
         Users user = jwtHelpers.getUser(srvrequest);
@@ -154,7 +191,7 @@ public class BookingController {
         bookingToBeCreated = bookingService.create(bookingToBeCreated);
 
         if (bookingToBeCreated == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request, Failed to create booking");
         }
 
         return ResponseEntity.ok(CommonResponse.<BookingResponse>builder()
@@ -315,6 +352,19 @@ public class BookingController {
         long startOfTodayTimestamp = startOfToday.toInstant().toEpochMilli();
 
         return timestamp > startOfTodayTimestamp;
+    }
+
+    private Long getEpochMillisFromDate(String dateString, ZoneId zoneId) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            LocalDate localDate = LocalDate.parse(dateString, formatter);
+
+            return localDate.atStartOfDay(zoneId).toInstant().toEpochMilli();
+        } catch (DateTimeParseException e) {
+            System.out.println("Error: Invalid date format. " + e.getMessage());
+            return null;
+        }
     }
 
 }

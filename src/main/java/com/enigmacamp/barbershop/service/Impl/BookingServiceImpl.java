@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.enigmacamp.barbershop.constant.BookingStatus;
 import com.enigmacamp.barbershop.constant.PaymentStatus;
@@ -108,13 +109,10 @@ public class BookingServiceImpl implements BookingService {
                 booking.setMidtransPaymentUrl(response.getBody().get("redirect_url"));
             }
 
-            return bookingRepository.saveAndFlush(booking);
+            return bookingRepository.save(booking);
 
         } catch (RuntimeException e) {
-            System.out.println("=========================================");
-            System.out.println("Error: " + e.getMessage());
-            System.out.println("=========================================");
-            throw new RuntimeException(e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
