@@ -246,7 +246,17 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
         }
 
-        Booking booking = bookingService.cancel(barber, id);
+        Booking booking = bookingService.getById(id);
+
+        if (booking == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
+        }
+
+        if (!booking.getBarberId().equals(barber)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ResponseMessage.ERROR_NOT_FOUND);
+        }
+
+        booking = bookingService.cancel(barber, id);
 
         if (booking == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
@@ -352,7 +362,7 @@ public class BookingController {
         ZonedDateTime startOfToday = today.atStartOfDay(ZoneId.systemDefault());
         long startOfTodayTimestamp = startOfToday.toInstant().toEpochMilli();
 
-        return timestamp > startOfTodayTimestamp;
+        return timestamp >= startOfTodayTimestamp;
     }
 
     private Long getEpochMillisFromDate(String dateString, ZoneId zoneId) {
