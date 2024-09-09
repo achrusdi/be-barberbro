@@ -28,13 +28,13 @@ services:
     depends_on:
       - db
     volumes:
-      - assets-volume:/app/src/main/resources/static/assets/
+      # - assets-volume:/app/src/main/resources/static/assets/
+      - ./src/main/resources/static/assets:/app/src/main/resources/static/assets
     networks:
       - springboot-network
 
 volumes:
   postgres-data-barberbro:
-  assets-volume:
 
 networks:
   springboot-network:
