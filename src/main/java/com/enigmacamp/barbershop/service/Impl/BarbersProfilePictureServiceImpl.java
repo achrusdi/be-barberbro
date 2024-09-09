@@ -23,11 +23,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.enigmacamp.barbershop.model.entity.Barbers;
 import com.enigmacamp.barbershop.repository.BarbersRepository;
 import com.enigmacamp.barbershop.service.BarberService;
+import com.enigmacamp.barbershop.service.CloudinaryService;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,11 +43,13 @@ public class BarbersProfilePictureServiceImpl implements BarbersProfilePictureSe
     private final BarbersRepository barbersRepository;
     private final String mainPath = "src/main/resources/static";
     private final String secondPath = "/assets/images/barbershop";
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
     public BarbersProfilePictureServiceImpl(@Value(mainPath + secondPath) String directoryPath,
             BarbersProfilePictureRepository barbersProfilePictureRepository, JwtHelpers jwtHelpers,
-            BarberService barberService, BarbersRepository barbersRepository) {
+            BarberService barberService, BarbersRepository barbersRepository, CloudinaryService cloudinaryService) {
+        this.cloudinaryService = cloudinaryService;
         this.barbersRepository = barbersRepository;
         this.directoryPath = Paths.get(directoryPath);
         this.barbersProfilePictureRepository = barbersProfilePictureRepository;
@@ -81,19 +85,13 @@ public class BarbersProfilePictureServiceImpl implements BarbersProfilePictureSe
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
             }
 
-            String originalFilename = multipartFile.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-
-            String uniqueFilename = UUID.randomUUID().toString() + extension;
-            Path filePath = directoryPath.resolve(uniqueFilename);
-            Files.copy(multipartFile.getInputStream(), filePath);
-            // String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            Map<String, String> uploadResult = cloudinaryService.uploadImage(multipartFile);
 
             BarberProfilePicture barberProfilePicture = BarberProfilePicture.builder()
-                    .name(uniqueFilename)
+                    .name(uploadResult.get("display_name"))
                     .contentType(multipartFile.getContentType())
                     .size(multipartFile.getSize())
-                    .path(secondPath + "/" + uniqueFilename)
+                    .path(uploadResult.get("url"))
                     .createdAt(System.currentTimeMillis())
                     .updatedAt(System.currentTimeMillis())
                     .build();

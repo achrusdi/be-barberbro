@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import com.enigmacamp.barbershop.model.entity.GalleryImage;
 import com.enigmacamp.barbershop.model.entity.Users;
 import com.enigmacamp.barbershop.repository.GalleryImageRepository;
 import com.enigmacamp.barbershop.service.BarberService;
+import com.enigmacamp.barbershop.service.CloudinaryService;
 import com.enigmacamp.barbershop.service.GalleryImageService;
 import com.enigmacamp.barbershop.util.JwtHelpers;
 
@@ -43,10 +45,13 @@ public class GalleryImageServiceImpl implements GalleryImageService {
     private final BarberService barberService;
     private final String mainPath = "src/main/resources/static";
     private final String secondPath = "/assets/images/gallery-images";
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
     public GalleryImageServiceImpl(@Value(mainPath + secondPath) String directoryPath,
-            GalleryImageRepository galleryImageRepository, JwtHelpers jwtHelpers, BarberService barberService) {
+            GalleryImageRepository galleryImageRepository, JwtHelpers jwtHelpers, BarberService barberService,
+            CloudinaryService cloudinaryService) {
+        this.cloudinaryService = cloudinaryService;
         this.barberService = barberService;
         this.jwtHelpers = jwtHelpers;
         this.directoryPath = Paths.get(directoryPath);
@@ -87,26 +92,29 @@ public class GalleryImageServiceImpl implements GalleryImageService {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
                 }
 
-                String originalFilename = image.getOriginalFilename();
-                String contentType = image.getContentType();
-                System.out.println("=========================================");
-                System.out.println("originalFilename: " + originalFilename);
-                System.out.println(contentType);
-                System.out.println(contentType.substring(contentType.lastIndexOf('/') + 1));
-                System.out.println("=========================================");
-                // String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-                String extension = contentType.substring(contentType.lastIndexOf('/') + 1);
-                
+                // String originalFilename = image.getOriginalFilename();
+                // String contentType = image.getContentType();
+                // System.out.println("=========================================");
+                // System.out.println("originalFilename: " + originalFilename);
+                // System.out.println(contentType);
+                // System.out.println(contentType.substring(contentType.lastIndexOf('/') + 1));
+                // System.out.println("=========================================");
+                // // String extension =
+                // originalFilename.substring(originalFilename.lastIndexOf('.'));
+                // String extension = contentType.substring(contentType.lastIndexOf('/') + 1);
 
-                String uniqueFilename = UUID.randomUUID().toString() + "." + extension;
-                Path filePath = directoryPath.resolve(uniqueFilename);
-                Files.copy(image.getInputStream(), filePath);
+                // String uniqueFilename = UUID.randomUUID().toString() + "." + extension;
+                // Path filePath = directoryPath.resolve(uniqueFilename);
+                // Files.copy(image.getInputStream(), filePath);
+
+                Map<String, String> uploadResult = cloudinaryService.uploadImage(image);
 
                 GalleryImage galleryImage = GalleryImage.builder()
-                        .name(uniqueFilename)
+                        .name(uploadResult.get("display_name"))
                         .contentType(image.getContentType())
                         .size(image.getSize())
-                        .path(secondPath + "/" + uniqueFilename)
+                        // .path(secondPath + "/" + uniqueFilename)
+                        .path(uploadResult.get("url"))
                         .createdAt(System.currentTimeMillis())
                         .updatedAt(System.currentTimeMillis())
                         .barbersId(barbers)
@@ -173,7 +181,7 @@ public class GalleryImageServiceImpl implements GalleryImageService {
 
             List<GalleryImage> galleryImages = galleryImageRepository.findAllByBarbersId(barbers);
             // if (galleryImages == null) {
-            //     return null;
+            // return null;
             // }
 
             List<GalleryImageResponse> responses = new ArrayList<>();
