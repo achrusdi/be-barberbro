@@ -397,7 +397,7 @@ public class BookingController {
         BookingAvailableResponse bookings = bookingService.getAvailable(barber, dateMillis);
 
         if (bookings == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found, IDK");
         }
         
         return ResponseEntity.ok(CommonResponse.<BookingAvailableResponse>builder()
