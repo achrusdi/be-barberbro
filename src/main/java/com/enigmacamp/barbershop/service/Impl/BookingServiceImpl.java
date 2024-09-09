@@ -435,18 +435,6 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = bookingRepository.findByBarberIdAndBookingDateRange(barber, start, end);
 
-        if (bookings.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
-        }
-
-        bookings.forEach(booking -> {
-            System.out.println("Booking id: " + booking.getBookingId());
-            System.out.println("Barber id: " + booking.getBarberId().getId());
-            System.out.println("Booking date: " + booking.getBookingDate());
-            System.out.println("Booking status: " + booking.getStatus());
-            System.out.println("Booking time: " + booking.getBookingTime());
-        });
-
         // All time
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
