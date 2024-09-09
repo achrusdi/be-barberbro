@@ -74,16 +74,13 @@ public class BookingController {
 
         Long currentDateMillis = getEpochMillisFromDate(LocalDate.now(indonesiaZoneId).toString(), indonesiaZoneId);
 
-        // Dapatkan waktu sekarang di zona waktu Indonesia
         LocalTime currentTime = LocalTime.now(indonesiaZoneId);
 
         if (booking.getBookingDate() < currentDateMillis) {
             System.out.println("Booking date is in the past.");
         } else if (booking.getBookingDate().equals(currentDateMillis)) {
-            // Jika tanggal sama, cek apakah bookingTime kurang dari 1 jam dari waktu saat ini
             LocalTime bookingLocalTime = LocalTime.parse(booking.getBookingTime());
 
-            // Hitung selisih waktu antara bookingLocalTime dan currentTime
             Duration durationBetween = Duration.between(currentTime, bookingLocalTime);
 
             if (currentTime.isAfter(bookingLocalTime)) {
@@ -93,12 +90,10 @@ public class BookingController {
                 System.out.println("Current time is within 1 hour before the booking time.");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking time must be more than 1 hour after the current time");
             } else {
-                // throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking time must be more than 1 hour after the current time");
                 System.out.println("Current time is more than 1 hour before the booking time.");
             }
 
         } else {
-            // Jika bookingDate lebih dari hari ini, hitung selisih hari
             long daysBetween = ChronoUnit.DAYS.between(Instant.ofEpochMilli(currentDateMillis), Instant.ofEpochMilli(booking.getBookingDate()));
             System.out.println("Booking is in the future. Days until booking: " + daysBetween);
         }

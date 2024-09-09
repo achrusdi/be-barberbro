@@ -12,7 +12,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -118,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             return bookingRepository.save(booking);
 
         } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create booking" + e.getMessage(), e);
         }
     }
 
@@ -465,8 +464,9 @@ public class BookingServiceImpl implements BookingService {
 
         for (String time : timeRange) {
 
-            List<Booking> filteredBookings = bookings.stream().filter(b -> b.getBookingTime().toString().equals(time)).toList();
-            
+            List<Booking> filteredBookings = bookings.stream().filter(b -> b.getBookingTime().toString().equals(time))
+                    .toList();
+
             if (filteredBookings.size() >= operationalHour.getLimitPerSession()) {
                 continue;
             }

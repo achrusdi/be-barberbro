@@ -1,6 +1,7 @@
 package com.enigmacamp.barbershop.model.entity;
 
-import com.enigmacamp.barbershop.constant.WithdrawalStatus;
+import com.enigmacamp.barbershop.model.dto.response.WithdrawalResponse;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,25 +21,45 @@ public class Withdrawals {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id", nullable = false)
-    private Users staffId;
+    @JoinColumn(name = "barber_id", nullable = false)
+    private Barbers barberId;
 
-    @Column(name = "amount", nullable = false)
-    private Double amount;
+    @Column(name = "account_number", nullable = false)
+    private String accountNumber;
 
-    @Column(name = "admin_fee", nullable = false)
-    private Double adminFee;
+    @Column(name = "account_name", nullable = false)
+    private String accountName;
 
-    @Column(name = "final_amount", nullable = false)
-    private Double finalAmount;
+    @Column(name = "bank_name", nullable = false)
+    private String bankName;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "withdrawal_amount", nullable = false)
+    private Double withdrawalAmount;
+
     @Column(name = "status", nullable = false)
-    private WithdrawalStatus status;
+    private String status;  
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private Long updatedAt;
+
+    public WithdrawalResponse toResponse() {
+
+        barberId.setOperationalHours(null);
+        barberId.setServices(null);
+        barberId.setSocial_media(null);
+
+        return WithdrawalResponse.builder()
+            .id(id)
+            .barber(barberId.toResponse())
+            .accountNumber(accountNumber)
+            .accountName(accountName)
+            .bankName(bankName)
+            .withdrawalAmount(withdrawalAmount)
+            .status(status)
+            .createdAt(createdAt)
+            .build();
+    }
 }

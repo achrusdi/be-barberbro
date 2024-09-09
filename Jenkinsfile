@@ -36,7 +36,9 @@ pipeline {
                     sh 'docker-compose down'
 
                     // Menjalankan docker-compose up dengan opsi --build untuk membangun ulang image dan menjalankan container
-                    sh 'docker-compose up --build -d'
+                    sh 'docker-compose build --no-cache'
+
+                    sh 'docker-compose up -d'
                 }
             }
         }
