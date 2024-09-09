@@ -53,11 +53,15 @@ public class Review {
     private Long createdAt;
 
     public ReviewResponse toResponse() {
+
         return ReviewResponse.builder()
                 .id(id)
                 .customerId(customerId.getId())
+                .customerName(customerId.getFirstName() + " " + customerId.getSurname())
                 .barbershopId(barbershopId.getId())
+                .barbershopName(barbershopId.getName())
                 .bookingId(bookingId.getBookingId())
+                .services(bookingId.getServices().stream().map(service -> service.getService_name()).toList())
                 .rating(rating)
                 .comment(comment)
                 .createdAt(createdAt)

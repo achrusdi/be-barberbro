@@ -114,6 +114,10 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Services cannot be empty");
         }
 
+        if (booking.getServices().size() > 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Maximum of 1 services allowed");
+        }
+
         LocalDateTime dateTime = Instant.ofEpochMilli(booking.getBookingDate())
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();

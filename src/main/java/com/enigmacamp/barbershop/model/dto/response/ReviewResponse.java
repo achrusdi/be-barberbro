@@ -1,6 +1,8 @@
 package com.enigmacamp.barbershop.model.dto.response;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -14,8 +16,17 @@ public class ReviewResponse {
     @JsonProperty("customer_id")
     private String customerId;
 
+    @JsonProperty("customer_name")
+    private String customerName;
+
     @JsonProperty("barbershop_id")
     private String barbershopId;
+
+    @JsonProperty("barbershop_name")
+    private String barbershopName;
+
+    @JsonProperty("services")
+    private List<String> services;
 
     @JsonProperty("booking_id")
     private String bookingId;
