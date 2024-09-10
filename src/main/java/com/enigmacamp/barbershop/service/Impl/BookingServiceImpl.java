@@ -410,13 +410,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingAvailableResponse getAvailable(Barbers barber, Long date) {
 
-        LocalDate localDate = getLocalDateFromEpochMillis(date);
-        Long start = getStartOfDayEpochMillis(localDate);
-        Long end = getEndOfDayEpochMillis(localDate);
-
         LocalDateTime dateTime = Instant.ofEpochMilli(date)
                 .atZone(ZoneId.of("Asia/Jakarta"))
                 .toLocalDateTime();
+
+        LocalDate localDate = getLocalDateFromEpochMillis(date);
+        Long start = getStartOfDayEpochMillis(localDate);
+        Long end = getEndOfDayEpochMillis(localDate);
 
         // DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
 
@@ -455,10 +455,6 @@ public class BookingServiceImpl implements BookingService {
             timeRange.add(currentTime.format(timeFormatter));
             currentTime = currentTime.plusHours(1);
         }
-
-        BookingAvailableResponse.builder()
-                .allTime(timeRange)
-                .build();
 
         List<String> availableTime = new ArrayList<>();
 
