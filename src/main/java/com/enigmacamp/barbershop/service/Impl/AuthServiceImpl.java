@@ -145,6 +145,11 @@ public class AuthServiceImpl implements AuthService {
         @Override
         public BarberRegisterResponse registerBarber(BarberRegisterRequest request, HttpServletRequest srvrequest) {
 
+                if (request.getBarbershop().getDescription().length() > 250) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "Description cannot be more than 250 characters");
+                }
+
                 String password = request.getBarbershop().getPassword();
 
                 if (password == null) {
@@ -193,7 +198,9 @@ public class AuthServiceImpl implements AuthService {
                                                                         .parse(operationalHour.getOpening_time()))
                                                         .closing_time(LocalTime
                                                                         .parse(operationalHour.getClosing_time()))
-                                                        .limitPerSession(operationalHour.getLimitPerSession() == null ? 1 : operationalHour.getLimitPerSession())
+                                                        .limitPerSession(operationalHour.getLimitPerSession() == null
+                                                                        ? 1
+                                                                        : operationalHour.getLimitPerSession())
                                                         .barbershop_id(barbers.toEntity())
                                                         .build();
 
