@@ -119,7 +119,7 @@ public class BookingController {
         }
 
         LocalDateTime dateTime = Instant.ofEpochMilli(booking.getBookingDate())
-                .atZone(ZoneId.systemDefault())
+                .atZone(ZoneId.of("Asia/Jakarta"))
                 .toLocalDateTime();
 
         String dayBooking = dateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()).toUpperCase();
